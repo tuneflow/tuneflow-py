@@ -1,0 +1,129 @@
+from tuneflow_py.descriptors.text import LabelText
+from tuneflow_py.descriptors.common import PluginInfo
+from tuneflow_py.descriptors.param import ParamDescriptor
+from tuneflow_py.descriptors.song_access import SongAccess
+from typing import Optional, Any
+from tuneflow_py.models.song import Song
+
+
+class TuneflowPlugin:
+    def __init__(self) -> None:
+        self.params_result_internal = {}
+
+    @staticmethod
+    def provider_id() -> str:
+        """
+        The unique id to identify the plugin provider.
+
+        For example:
+        `friday-core`, `some-corp`, etc.
+        """
+        raise Exception("provider_id must be overwritten.")
+
+    @staticmethod
+    def plugin_id() -> str:
+        '''
+        The unique plugin id under the provider's namespace.
+
+        For example:
+        `melody-extractor`, `tune-analyzer`, etc.
+        '''
+        raise Exception("plugin_id must be overwritten.")
+
+    @staticmethod
+    def provider_display_name() -> LabelText:
+        '''
+        The display name of the provider.
+        '''
+        raise Exception("provider_display_name must be overwritten.")
+
+    @staticmethod
+    def plugin_display_name() -> LabelText:
+        '''
+        The display name of the plugin.
+        '''
+        raise Exception("plugin_display_name must be overwritten.")
+
+    @staticmethod
+    def plugin_description() -> Optional[LabelText]:
+        '''
+        The description of this plugin.
+        '''
+        return None
+
+    @staticmethod
+    def plugin_info() -> Optional[PluginInfo]:
+        return None
+
+    @staticmethod
+    def allow_reset():
+        '''
+        Whether to allow users to reset all parameters of this plugin.
+        '''
+        return False
+
+    def init(self, song: Song):
+        '''
+        Initializes the plugin instance.
+
+        Override this method to initialize your plugin before it starts running.
+        '''
+        pass
+
+    def params(self) -> dict[str, ParamDescriptor]:
+        '''
+        Specify params to get from user input.
+
+        Param input widgets will be displayed on the UI, and the inputs will be collected and fed into @run method.
+
+        If you don't need any param, return `{}`;
+        '''
+        return {}
+
+    def song_access(self) -> SongAccess:
+        '''
+        Provide the access this plugin needs to modify a song.
+        '''
+        return {
+            "create_track": False,
+            "remove_track": False
+        }
+
+    def allow_manual_apply_adjust(self):
+        '''
+        Whether the user can manually apply this plugin and go back to adjust it.
+        Enable this when you want the user to frequently toggle this plugin on and off
+        to see the difference.
+
+        For example: A plugin that divides a track into two, you want the user to
+        easily switch between the plugin is on or off to see what's going on.
+        '''
+        return False
+
+    def run(self, song: Song, params: dict[str, Any]):
+        '''
+        The main logic here.
+
+        Args:
+            `song`: The song that is being processed. You can directly modify the song
+                by calling its methods.
+            `params`: The results collected from user input specified by the `params` method.
+        '''
+        pass
+
+    # =====================================
+    # NO OVERWRITE BELOW
+    # =====================================
+
+    @classmethod
+    def create(cls, song: Song):
+        plugin = cls()
+        plugin.reset_internal()
+        plugin.init(song)
+        return plugin
+
+    def reset_internal(self):
+        params = self.params()
+        for key in params.keys():
+            param_descriptor = params[key]
+            self.params_result_internal[key] = param_descriptor["defaultValue"]

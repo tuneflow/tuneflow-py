@@ -1,0 +1,3 @@
+[submodule "protos/src"]
+	path = protos/src
+	url = https://github.com/andantei/tuneflow-proto.git
