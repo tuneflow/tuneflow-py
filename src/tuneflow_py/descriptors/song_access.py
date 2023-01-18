@@ -1,7 +1,7 @@
 from typing import TypedDict, Optional
 
 
-class SongAccess(TypedDict):
+class SongAccess(TypedDict, total=False):
     create_track: Optional[bool]
     ''' Whether the plugin has permission to create a new track. '''
 

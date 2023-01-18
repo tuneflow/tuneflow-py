@@ -28,20 +28,20 @@ class WidgetType(Enum):
     Descriptions = 16
 
 
-class SliderWidgetConfig(TypedDict):
+class SliderWidgetConfig(TypedDict, total=False):
     min_value: RealNumber
     max_value: RealNumber
     step: RealNumber
     unit: Optional[str]
 
 
-class InputWidgetConfig(TypedDict):
+class InputWidgetConfig(TypedDict, total=False):
     min_value: RealNumber
     max_value: RealNumber
     step: RealNumber
 
 
-class TrackSelectorWidgetConfig(TypedDict):
+class TrackSelectorWidgetConfig(TypedDict, total=False):
     always_show_track_info: Optional[bool]
     '''  Whether to always show the track info. Default to false. '''
 
@@ -49,27 +49,27 @@ class TrackSelectorWidgetConfig(TypedDict):
     ''' If specified, only the allowed types of tracks can be selected. '''
 
 
-class PitchWidgetConfig(TypedDict):
+class PitchWidgetConfig(TypedDict, total=False):
     min_allowed_pitch: Optional[RealNumber]
     max_allowed_pitch: Optional[RealNumber]
 
 
-class TrackPitchSelectorWidgetConfig(TypedDict):
+class TrackPitchSelectorWidgetConfig(TypedDict, total=False):
     track_selector_config: TrackSelectorWidgetConfig
     pitch_selector_config: PitchWidgetConfig
 
 
-class InstrumentSelectorWidgetConfig(TypedDict):
+class InstrumentSelectorWidgetConfig(TypedDict, total=False):
     disabled_programs: Optional[list[RealNumber]]
     ''' Not supported yet. '''
 
 
-class SelectWidgetOption(TypedDict):
+class SelectWidgetOption(TypedDict, total=False):
     label: LabelText
     value: Any
 
 
-class SelectWidgetConfig(TypedDict):
+class SelectWidgetConfig(TypedDict, total=False):
     options: list[SelectWidgetOption]
 
     allow_search: Optional[bool]
@@ -93,7 +93,7 @@ class SelectWidgetConfig(TypedDict):
     '''
 
 
-class SelectListWidgetConfig(TypedDict):
+class SelectListWidgetConfig(TypedDict, total=False):
     options: list[SelectWidgetOption]
     max_height: Optional[RealNumber]
     size: Optional[str]
@@ -103,7 +103,7 @@ class SelectListWidgetConfig(TypedDict):
     allow_search: Optional[bool]
 
 
-class SwitchWidgetConfig(TypedDict):
+class SwitchWidgetConfig(TypedDict, total=False):
     type: Optional[Literal['circle', 'round', 'line']]
     '''
     'circle' | 'round' | 'line'
@@ -112,13 +112,13 @@ class SwitchWidgetConfig(TypedDict):
     '''
 
 
-class InputNumberWidgetConfig(TypedDict):
+class InputNumberWidgetConfig(TypedDict, total=False):
     min_value: RealNumber
     max_value: RealNumber
     step: RealNumber
 
 
-class FileSelectorWidgetConfig(TypedDict):
+class FileSelectorWidgetConfig(TypedDict, total=False):
     allowed_extensions: list[str]
     ''' The extensions (without ".") that are allowed to choose. '''
 
@@ -138,12 +138,12 @@ class FileSelectorWidgetConfig(TypedDict):
 AudioSourceType = Literal['file', 'audioTrack', 'record']
 
 
-class MultiSourceAudioSelectorWidgetConfig(TypedDict):
+class MultiSourceAudioSelectorWidgetConfig(TypedDict, total=False):
     allowed_sources: Optional[list[AudioSourceType]]
     ''' Default to allow all audio sources. '''
 
 
-class MultiSourceAudioSelectorResult(TypedDict):
+class MultiSourceAudioSelectorResult(TypedDict, total=False):
     source_type: AudioSourceType
 
     audio_info: Any
@@ -155,20 +155,20 @@ class MultiSourceAudioSelectorResult(TypedDict):
     '''
 
 
-class DescriptionData(TypedDict):
+class DescriptionData(TypedDict, total=False):
     label: LabelText
     value: str
     span: RealNumber
 
 
-class DescriptionsWidgetConfig(TypedDict):
+class DescriptionsWidgetConfig(TypedDict, total=False):
     size: Literal['mini', 'small', 'medium', 'large']
     column: int
     data: list[DescriptionData]
 
 
-class WidgetDescriptor(TypedDict):
-    type: WidgetType
+class WidgetDescriptor(TypedDict, total=False):
+    type: int # WidgetType
     config: Optional[SliderWidgetConfig
                      | InputWidgetConfig
                      | SelectWidgetConfig

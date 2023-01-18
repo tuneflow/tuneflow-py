@@ -2,11 +2,27 @@ from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
 from tuneflow_py.descriptors.song_access import SongAccess
-from typing import Optional, Any
+from typing import Optional, Any, TypedDict, Callable
 from tuneflow_py.models.song import Song
 
 
+class ReadAPIs(TypedDict):
+    translate_label: Callable[[LabelText], str]
+
+    serialize_song: Callable[[Song], str]
+
+    deserialize_song: Callable[[str], Song]
+
+    get_available_audio_plugins: Callable[[], list[Any]]
+
+
 class TuneflowPlugin:
+    '''
+    The base class of a plugin.
+
+    All plugins should be a sub-class of this plugin in order to run in the pipeline.
+    '''
+
     def __init__(self) -> None:
         self.params_result_internal = {}
 
@@ -62,7 +78,7 @@ class TuneflowPlugin:
         '''
         return False
 
-    def init(self, song: Song):
+    def init(self, song: Song, read_apis: ReadAPIs):
         '''
         Initializes the plugin instance.
 
@@ -100,7 +116,7 @@ class TuneflowPlugin:
         '''
         return False
 
-    def run(self, song: Song, params: dict[str, Any]):
+    def run(self, song: Song, params: dict[str, Any], read_apis: ReadAPIs):
         '''
         The main logic here.
 
@@ -116,10 +132,10 @@ class TuneflowPlugin:
     # =====================================
 
     @classmethod
-    def create(cls, song: Song):
+    def create(cls, song: Song, read_apis: ReadAPIs):
         plugin = cls()
         plugin.reset_internal()
-        plugin.init(song)
+        plugin.init(song, read_apis=read_apis)
         return plugin
 
     def reset_internal(self):

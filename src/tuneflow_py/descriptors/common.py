@@ -11,7 +11,7 @@ class ClipInfo(TypedDict):
 SupportedPlatform = Literal['desktop', 'web']
 
 
-class PluginInfo(TypedDict):
+class PluginInfo(TypedDict, total=False):
     supported_platforms: Optional[SupportedPlatform]
     ''' If not provided, supports all platforms. '''
 

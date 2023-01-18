@@ -24,7 +24,7 @@ class InjectSource(Enum):
     ''' A number that represents the start tick of the beat where the playhead is at. '''
 
 
-class ParamDescriptor(TypedDict):
+class ParamDescriptor(TypedDict, total=False):
     '''
     Definition of the config for a single param.
 
@@ -45,7 +45,7 @@ class ParamDescriptor(TypedDict):
     '''
     Whether this param is adjustable. If the param is not adjustable, the controllable
     part is not shown.
-    
+
     Defaults to true.
     '''
 
