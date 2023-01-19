@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "tuneflow-py"
+version = "0.0.1"
+authors = [{ name = "Andantei", email = "contact@info.tuneflow.com" }]
+description = "Implement your music models and algorithms directly in TuneFlow - The next-gen DAW for the AI era"
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = [
+  "AI",
+  "music",
+  "DAW",
+  "TuneFlow",
+  "composition",
+  "songwriting",
+  "music production",
+  "music generation",
+  "music transcription",
+  "mixing",
+  "music theory",
+  "music information retrieval",
+  "MIR",
+  "music analysis",
+  "song analysis",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = ['protobuf == 3.19.4']
+
+[project.urls]
+"Homepage" = "https://github.com/tuneflow/tuneflow-py"
+"Bug Tracker" = "https://github.com/tuneflow/tuneflow-py/issues"
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__", "src/experimental", "src/typestubs"]
+
+reportTypedDictNotRequiredAccess = "warning"
+reportGeneralTypeIssues = "warning"
