@@ -2,18 +2,30 @@ from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
 from tuneflow_py.descriptors.song_access import SongAccess
+from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
 from typing import Optional, Any, TypedDict, Callable
 from tuneflow_py.models.song import Song
 
 
-class ReadAPIs(TypedDict):
-    translate_label: Callable[[LabelText], str]
+class ReadAPIs:
+    '''
+    Read-only APIs used in `init` and `run` methods of a plugin.
+    '''
+    
+    def get_system_locale(self):
+        raise Exception("Not implemented")
 
-    serialize_song: Callable[[Song], str]
+    def translate_label(self, label_text: LabelText):
+        raise Exception("Not implemented")
 
-    deserialize_song: Callable[[str], Song]
+    def serialize_song(self, song: Song):
+        raise Exception("Not implemented")
 
-    get_available_audio_plugins: Callable[[], list[Any]]
+    def deserialize_song(self, encoded_song: str):
+        raise Exception("Not implemented")
+
+    def get_available_audio_plugins(self) -> list[AudioPluginDescriptor]:
+        raise Exception("Not implemented")
 
 
 class TuneflowPlugin:
