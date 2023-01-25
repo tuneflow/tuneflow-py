@@ -14,7 +14,7 @@ pip install tuneflow-py
 
 Check out the SDKs in other languages:
 
-* **Typescript**: https://www.github.com/andantei/tuneflow
+* **Typescript**: https://www.github.com/tuneflow/tuneflow
 * Other: Contributions welcome!
 
 ## Getting Started
@@ -84,4 +84,4 @@ For a comprehensive of example plugins, check out https://www.github.com/tuneflo
 
 [TuneFlow Website](https://tuneflow.com)
 
-[Typescript SDK](https://www.github.com/andantei/tuneflow)
+[Typescript SDK](https://www.github.com/tuneflow/tuneflow)
