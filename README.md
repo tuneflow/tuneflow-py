@@ -1,4 +1,4 @@
-# tuneflow-py
+# TuneFlow Python SDK
 
 ## What is `TuneFlow` and `tuneflow-py`?
 
