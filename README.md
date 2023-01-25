@@ -21,7 +21,7 @@ Check out the SDKs in other languages:
 
 The core idea of TuneFlow's plugin system is that you only care about the data model, NOT the implementation. A plugin's only goal is to modify the song, and the DAW will get the modified result and apply changes automatically. Below is an illustration:
 
-![Plugin Flow](docs/images/pipeline_flow_en)
+![Plugin Flow](docs/images/pipeline_flow_en.jpg)
 
 A barebone plugin may look like this:
 
