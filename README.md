@@ -65,7 +65,7 @@ This is where you specify the input parameters you want from the user or from th
 
 ### `init`
 
-Called by the DAW when the user loads the plugin but before actually running it. The DAW will provide the current song snapshot (`song: Song`) and some read-only APIs (`read_apis: ReadAPIS`), and you will take these params to initialize your plugin.
+Called by the DAW when the user loads the plugin but before actually running it. The DAW will provide the current song snapshot (`song: Song`) and some read-only APIs (`read_apis: ReadAPIs`), and you will take these params to initialize your plugin.
 
 For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
 
