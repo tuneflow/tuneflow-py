@@ -1,5 +1,7 @@
 # TuneFlow Python SDK
 
+![TuneFlow Screenshots](docs/images/tuneflow_wall_thin.jpg)
+
 ## What is `TuneFlow` and `tuneflow-py`?
 
 [TuneFlow](https://www.tuneflow.com) is a next-gen DAW that aims to boost music making productivity through the power of AI. Unlike traditional DAWs, TuneFlow has a plugin system designed to facilitate music production in almost all areas, including but not limited to **song writing**, **arrangement**, **automation**, **mixing**, **transcription**...... You can easily write your own algorithms or integrate your AI models directly into the song-making process. `tuneflow-py` is the Python SDK of TuneFlow plugins.
