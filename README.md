@@ -59,7 +59,7 @@ class HelloWorld(TuneflowPlugin):
 
 ```
 
-When writing a plugin, our main focus is in`params`, `init` and `run`.
+When writing a plugin, our main focus is in `params`, `init` and `run`.
 
 ### `params`
 
