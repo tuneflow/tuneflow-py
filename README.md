@@ -12,14 +12,14 @@
 pip install tuneflow-py
 ```
 
-## Prefer Another Language?
+## Prefer another language?
 
 Check out the SDKs in other languages:
 
 * **Typescript**: https://www.github.com/tuneflow/tuneflow
 * Other: Contributions welcome!
 
-## Getting Started
+## Getting started
 
 The core idea of TuneFlow's plugin system is that you only care about the data model, NOT the implementation. A plugin's only goal is to modify the song, and the DAW will get the modified result and apply changes automatically. Below is an illustration:
 
@@ -76,6 +76,10 @@ For example, if you have a list of presets that applies to different time signat
 Called by the DAW when the user actually runs the plugin by hitting the **Apply`** button.
 
 Here is where you implement your main logic. The method takes in the current song snapshot (`song: Song`), the params that are actually provided by the user or the DAW (`params`), and the read-only APIs (`read_apis: ReadAPIs`).
+
+## Run your plugin
+
+To debug and run your plugin locally, you can use `tuneflow-devkit-py`. For more documentation, visit: https://github.com/tuneflow/tuneflow-devkit-py
 
 ## Examples
 
