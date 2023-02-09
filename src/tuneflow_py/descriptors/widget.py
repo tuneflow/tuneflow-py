@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum

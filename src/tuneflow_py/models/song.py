@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from base64 import b64encode, b64decode
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.track import Track
