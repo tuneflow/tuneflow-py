@@ -9,8 +9,8 @@ TrackType = song_pb2.TrackType
 
 
 class Track:
-    def __init__(self, type: int,
-                 song,
+    def __init__(self, type=TrackType.MIDI_TRACK,
+                 song=None,
                  uuid=None,
                  instrument=None,
                  volume=dbToVolumeValue(0),
@@ -49,3 +49,6 @@ class Track:
     @staticmethod
     def generateTrackIdInternal():
         return nanoid.generate()
+    
+    def get_type(self) -> int:
+        return self._proto.type
