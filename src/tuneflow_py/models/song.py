@@ -21,6 +21,14 @@ class Song:
             if track_proto.uuid == track_id:
                 return Track(proto=track_proto)
         return None
+    
+    def get_track_index_by_id(self, track_id: str) -> int | None:
+        index = 0
+        for track_proto in self._proto.tracks:
+            if track_proto.uuid == track_id:
+                return index
+            index = index + 1
+        return None
 
     def serialize(self):
         # type: ignore
@@ -43,3 +51,7 @@ class Song:
 
     def get_next_track_rank(self):
         return 1 if len(self._proto.tracks) == 0 else max([track.rank for track in self._proto.tracks]) + 1
+
+    def print_all_tracks(self):
+        for track in self.get_tracks():
+            print(track._proto)
