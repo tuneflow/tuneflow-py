@@ -21,3 +21,6 @@ class Clip:
     
     def delete_note_at(self, index: int):
         self._proto.notes.pop(index)
+
+    def get_audio_clip_data(self):
+        return self._proto.audio_clip_data
