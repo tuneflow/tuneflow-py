@@ -32,6 +32,7 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines pytest-cov
+    echo $PYTHONPATH
     pytest --cov-report xml --junitxml=junit.xml --cov=tuneflow_py 
   displayName: 'Test'
   env:
