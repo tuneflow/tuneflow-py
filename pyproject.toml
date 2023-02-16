@@ -30,7 +30,11 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
-dependencies = ['protobuf == 3.19.4', 'nanoid == 2.0.0']
+dependencies = [
+  'protobuf <= 3.19.4',
+  'nanoid >= 2.0.0',
+  'miditoolkit-light >= 0.1.18',
+]
 
 [project.urls]
 "Homepage" = "https://github.com/tuneflow/tuneflow-py"

@@ -1,6 +1,6 @@
-from typing import Literal, TypedDict, Optional
+from typing import Literal, TypedDict, Optional, Union
 
-RealNumber = int | float
+RealNumber = Union[int, float]
 
 
 class ClipInfo(TypedDict):

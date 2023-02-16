@@ -1,3 +1,4 @@
+from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum
@@ -168,7 +169,7 @@ class DescriptionsWidgetConfig(TypedDict, total=False):
 
 
 class WidgetDescriptor(TypedDict, total=False):
-    type: int # WidgetType
+    type: int  # WidgetType
     config: Optional[SliderWidgetConfig
                      | InputWidgetConfig
                      | SelectWidgetConfig
