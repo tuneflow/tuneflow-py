@@ -31,7 +31,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines
+    pip install pytest pytest-azurepipelines pytest-cov
     pytest --cov-report xml --junitxml=junit.xml --cov=tuneflow_py 
   displayName: 'Test'
 - task: PublishTestResults@2
