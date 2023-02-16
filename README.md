@@ -85,6 +85,9 @@ To debug and run your plugin locally, you can use `tuneflow-devkit-py`. For more
 
 For a comprehensive of example plugins, check out https://www.github.com/tuneflow/tuneflow-py-demos
 
+## Contribute
+
+Checkout [contribution guidelines](./CONTRIBUTE.md).
 
 ## Resources
 
