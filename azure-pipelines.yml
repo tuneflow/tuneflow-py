@@ -34,6 +34,8 @@ steps:
     pip install pytest pytest-azurepipelines pytest-cov
     pytest --cov-report xml --junitxml=junit.xml --cov=tuneflow_py 
   displayName: 'Test'
+  env:
+    PYTHONPATH: $(System.DefaultWorkingDirectory)
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
