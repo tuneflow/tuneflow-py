@@ -81,10 +81,8 @@ class Song:
         # Add tempos and time signatures
         song.overwrite_tempo_changes([TempoEvent(ticks=scale_int_by(
             tempo_change.time, ppq_scale_factor), bpm=tempo_change.tempo) for tempo_change in midi_obj.tempo_changes])
-        del song_proto.time_signatures[:]
-        for time_signature_change in midi_obj.time_signature_changes:
-            song_proto.time_signatures.add(ticks=scale_int_by(
-                time_signature_change.time, ppq_scale_factor), numerator=time_signature_change.numerator, denominator=time_signature_change.denominator)
+        song.overwrite_time_signature_changes([TimeSignatureEvent(ticks=scale_int_by(
+            time_signature_change.time, ppq_scale_factor), numerator=time_signature_change.numerator, denominator=time_signature_change.denominator) for time_signature_change in midi_obj.time_signature_changes])
 
         # Add tracks and notes.
         song_last_tick = 0
@@ -133,7 +131,7 @@ class Song:
             else:
                 # Volume data missing from midi, set it to default.
                 song_track_proto.volume = db_to_volume_value(0.0)
-            
+
             if len(pan_ccs) == 1:
                 song_track_proto.pan = pan_ccs[0].value - 64
             elif len(pan_ccs) > 1:
@@ -265,6 +263,14 @@ class Song:
             self.create_tempo_change(
                 ticks=tempo_event.get_ticks(), bpm=tempo_event.get_bpm())
         self.retiming_tempo_events()
+
+    def overwrite_time_signature_changes(self, time_signatures: List[TimeSignatureEvent]):
+        if len(time_signatures) == 0:
+            raise Exception('At least one time signature needs to be present.')
+        del self._proto.time_signatures[:]
+        for time_signature_change in time_signatures:
+            self._proto.time_signatures.add(
+                ticks=time_signature_change.get_ticks(), numerator=time_signature_change.get_numerator(), denominator=time_signature_change.get_denominator())
 
     def get_time_signature_event_count(self):
         return len(self._proto.time_signatures)
