@@ -43,6 +43,12 @@ steps:
     testResultsFiles: 'junit.xml'
     mergeTestResults: true
     failTaskOnFailedTests: true
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '2.1.x'
+
 - task: PublishCodeCoverageResults@2
   inputs:
     summaryFileLocation: 'coverage.xml'
