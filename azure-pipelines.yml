@@ -1,0 +1,50 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+strategy:
+  matrix:
+    Python37:
+      python.version: '3.7'
+    Python38:
+      python.version: '3.8'
+    Python39:
+      python.version: '3.9'
+    Python310:
+      python.version: '3.10'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    pip install pytest pytest-azurepipelines pytest-cov
+    export PYTHONPATH=$PYTHONPATH:$PWD/src
+    echo $PYTHONPATH
+    pytest --cov-report xml --junitxml=junit.xml --cov=tuneflow_py 
+  displayName: 'Test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'junit.xml'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+- task: PublishCodeCoverageResults@2
+  inputs:
+    summaryFileLocation: 'coverage.xml'
+    pathToSources: 'src'
+    failIfCoverageEmpty: true
