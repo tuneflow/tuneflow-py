@@ -1,1 +1,1 @@
-pytest --cov-report xml --junitxml=junit.xml --cov=tuneflow_py 
+pytest --doctest-modules --junitxml=junit/test-results.xml --cov=src --cov-report=xml
