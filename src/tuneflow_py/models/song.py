@@ -9,6 +9,7 @@ from tuneflow_py.models.automation import AutomationTarget, AutomationTargetType
 from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than
 from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, Instrument, Note as ToolkitNote
 from types import SimpleNamespace
+from typing import List
 
 
 class Song:
@@ -244,7 +245,7 @@ class Song:
         )
         return base_tempo_change.time + ticks_delta / ticks_per_second_since_last_tempo_change
 
-    def overwrite_tempo_changes(self, tempo_events: list[TempoEvent]):
+    def overwrite_tempo_changes(self, tempo_events: List[TempoEvent]):
         if len(tempo_events) == 0:
             raise Exception('Cannot clear all the tempo events.')
         sorted_tempo_events = sorted(

@@ -3,7 +3,7 @@ from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
 from tuneflow_py.descriptors.song_access import SongAccess
 from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
-from typing import Optional, Any, TypedDict, Callable
+from typing import Optional, Any, List
 from tuneflow_py.models.song import Song
 
 
@@ -24,7 +24,7 @@ class ReadAPIs:
     def deserialize_song(self, encoded_song: str):
         raise Exception("Not implemented")
 
-    def get_available_audio_plugins(self) -> list[AudioPluginDescriptor]:
+    def get_available_audio_plugins(self) -> List[AudioPluginDescriptor]:
         raise Exception("Not implemented")
 
 

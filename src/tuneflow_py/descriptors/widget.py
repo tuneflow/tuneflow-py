@@ -2,7 +2,7 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum
-from typing import TypedDict, Optional, Any, Literal
+from typing import TypedDict, Optional, Any, Literal, List
 from tuneflow_py.models.track import TrackType
 
 
@@ -46,7 +46,7 @@ class TrackSelectorWidgetConfig(TypedDict, total=False):
     always_show_track_info: Optional[bool]
     '''  Whether to always show the track info. Default to false. '''
 
-    allowed_track_types: Optional[list[TrackType]]  # type: ignore
+    allowed_track_types: Optional[List[TrackType]]  # type: ignore
     ''' If specified, only the allowed types of tracks can be selected. '''
 
 
@@ -61,7 +61,7 @@ class TrackPitchSelectorWidgetConfig(TypedDict, total=False):
 
 
 class InstrumentSelectorWidgetConfig(TypedDict, total=False):
-    disabled_programs: Optional[list[RealNumber]]
+    disabled_programs: Optional[List[RealNumber]]
     ''' Not supported yet. '''
 
 
@@ -71,7 +71,7 @@ class SelectWidgetOption(TypedDict, total=False):
 
 
 class SelectWidgetConfig(TypedDict, total=False):
-    options: list[SelectWidgetOption]
+    options: List[SelectWidgetOption]
 
     allow_search: Optional[bool]
     ''' Whether to show search box. Default to false. '''
@@ -95,7 +95,7 @@ class SelectWidgetConfig(TypedDict, total=False):
 
 
 class SelectListWidgetConfig(TypedDict, total=False):
-    options: list[SelectWidgetOption]
+    options: List[SelectWidgetOption]
     max_height: Optional[RealNumber]
     size: Optional[str]
     virtual_list_props: Optional[Any]
@@ -120,7 +120,7 @@ class InputNumberWidgetConfig(TypedDict, total=False):
 
 
 class FileSelectorWidgetConfig(TypedDict, total=False):
-    allowed_extensions: list[str]
+    allowed_extensions: List[str]
     ''' The extensions (without ".") that are allowed to choose. '''
 
     select_directory: Optional[str]
@@ -140,7 +140,7 @@ AudioSourceType = Literal['file', 'audioTrack', 'record']
 
 
 class MultiSourceAudioSelectorWidgetConfig(TypedDict, total=False):
-    allowed_sources: Optional[list[AudioSourceType]]
+    allowed_sources: Optional[List[AudioSourceType]]
     ''' Default to allow all audio sources. '''
 
 
@@ -165,7 +165,7 @@ class DescriptionData(TypedDict, total=False):
 class DescriptionsWidgetConfig(TypedDict, total=False):
     size: Literal['mini', 'small', 'medium', 'large']
     column: int
-    data: list[DescriptionData]
+    data: List[DescriptionData]
 
 
 class WidgetDescriptor(TypedDict, total=False):
