@@ -52,5 +52,5 @@ steps:
 - task: PublishCodeCoverageResults@2
   inputs:
     summaryFileLocation: 'coverage.xml'
-    pathToSources: 'src'
+    pathToSources: '$(System.DefaultWorkingDirectory)/src'
     failIfCoverageEmpty: true
