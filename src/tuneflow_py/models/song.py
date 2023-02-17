@@ -130,6 +130,10 @@ class Song:
                 for index, cc in enumerate(sorted(volume_ccs, key=lambda x: x.time)):
                     volume_target_value.points.add(tick=scale_int_by(
                         cc.time, ppq_scale_factor), value=cc.value/127.0, id=index+1)
+            else:
+                # Volume data missing from midi, set it to default.
+                song_track_proto.volume = db_to_volume_value(0.0)
+            
             if len(pan_ccs) == 1:
                 song_track_proto.pan = pan_ccs[0].value - 64
             elif len(pan_ccs) > 1:
