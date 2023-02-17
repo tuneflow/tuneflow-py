@@ -2,7 +2,7 @@ from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
 from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Dict
 from tuneflow_py.models.song import Song
 
 
@@ -118,7 +118,7 @@ class TuneflowPlugin:
         '''
         return False
 
-    def run(self, song: Song, params: dict[str, Any], read_apis: ReadAPIs):
+    def run(self, song: Song, params: Dict[str, Any], read_apis: ReadAPIs):
         '''
         The main logic here.
 
