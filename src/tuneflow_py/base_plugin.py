@@ -1,7 +1,6 @@
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
-from tuneflow_py.descriptors.song_access import SongAccess
 from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
 from typing import Optional, Any, List
 from tuneflow_py.models.song import Song
@@ -107,15 +106,6 @@ class TuneflowPlugin:
         If you don't need any param, return `{}`;
         '''
         return {}
-
-    def song_access(self) -> SongAccess:
-        '''
-        Provide the access this plugin needs to modify a song.
-        '''
-        return {
-            "create_track": False,
-            "remove_track": False
-        }
 
     def allow_manual_apply_adjust(self):
         '''

@@ -2,8 +2,8 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum
-from typing import TypedDict, Optional, Any, List
-from typing_extensions import Literal
+from typing import Optional, Any, List
+from typing_extensions import Literal, TypedDict
 from tuneflow_py.models.track import TrackType
 
 

@@ -1,5 +1,5 @@
-from typing import TypedDict, Optional, Union
-from typing_extensions import Literal
+from typing import Optional, Union
+from typing_extensions import Literal, TypedDict
 
 RealNumber = Union[int, float]
 
