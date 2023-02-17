@@ -5,7 +5,7 @@
 [![Build Status](https://dev.azure.com/zeostudio/tuneflow-public/_apis/build/status/tuneflow.tuneflow-py?branchName=main)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
 [![Code Coverage](https://img.shields.io/azure-devops/coverage/zeostudio/tuneflow-public/32/main?logo=azure-pipelines)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
 [![PyPI](https://img.shields.io/pypi/v/tuneflow-py?color=blue&label=tuneflow-py&logo=pypi)](https://pypi.org/project/tuneflow-py/)
-![Discord](https://img.shields.io/discord/1076012137161424906?color=%237289da&logo=discord)
+[![Discord](https://img.shields.io/discord/1076012137161424906?color=%237289da&logo=discord)](https://discord.com/channels/1076012137161424906/1076012755250851860)
 ![License](https://img.shields.io/github/license/tuneflow/tuneflow-py)
 
 ## What is `TuneFlow` and `tuneflow-py`?
@@ -14,7 +14,7 @@
 
 ## Installation
 
-``` bash
+```bash
 pip install tuneflow-py
 ```
 
@@ -22,8 +22,8 @@ pip install tuneflow-py
 
 Check out the SDKs in other languages:
 
-* **Typescript**: https://www.github.com/tuneflow/tuneflow
-* Other: Contributions welcome!
+- **Typescript**: https://www.github.com/tuneflow/tuneflow
+- Other: Contributions welcome!
 
 ## Getting started
 
@@ -33,7 +33,7 @@ The core idea of TuneFlow's plugin system is that you only care about the data m
 
 A barebone plugin may look like this:
 
-``` python
+```python
 from tuneflow_py import TuneflowPlugin, Song, ReadAPIs, ParamDescriptor
 
 
@@ -53,10 +53,10 @@ class HelloWorld(TuneflowPlugin):
     @staticmethod
     def plugin_display_name():
         return "Hellow World"
-    
+
     def params(self) -> dict[str, ParamDescriptor]:
         return {}
-    
+
     def init(self, song: Song, read_apis: ReadAPIs):
         pass
 
