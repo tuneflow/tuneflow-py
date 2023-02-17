@@ -35,4 +35,4 @@ steps:
     export PYTHONPATH=$PYTHONPATH:$PWD/src
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=src --cov-report=xml
   displayName: 'Test'
-\
+
