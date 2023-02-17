@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "tuneflow-py"
-version = "0.0.4"
+version = "0.0.5"
 authors = [{ name = "TuneFlow", email = "contact@info.tuneflow.com" }]
 description = "Implement your music models and algorithms directly in TuneFlow - The next-gen DAW for the AI era"
 readme = "README.md"
@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
   'protobuf <= 3.19.4',
   'nanoid >= 2.0.0',
-  'miditoolkit-light >= 0.1.18',
+  'miditoolkit-light >= 0.1.19',
 ]
 
 [project.urls]
