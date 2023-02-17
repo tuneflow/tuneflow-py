@@ -34,6 +34,7 @@ dependencies = [
   'protobuf <= 3.19.4',
   'nanoid >= 2.0.0',
   'miditoolkit-light >= 0.1.19',
+  'typing_extensions >= 4.5.0'
 ]
 
 [project.urls]
