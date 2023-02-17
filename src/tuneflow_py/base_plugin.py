@@ -10,7 +10,7 @@ class ReadAPIs:
     '''
     Read-only APIs used in `init` and `run` methods of a plugin.
     '''
-    
+
     def get_system_locale(self):
         raise Exception("Not implemented")
 
@@ -97,7 +97,7 @@ class TuneflowPlugin:
         '''
         pass
 
-    def params(self) -> dict[str, ParamDescriptor]:
+    def params(self) -> Dict[str, ParamDescriptor]:
         '''
         Specify params to get from user input.
 
