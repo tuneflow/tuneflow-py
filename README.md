@@ -3,8 +3,9 @@
 ![TuneFlow Screenshots](docs/images/tuneflow_wall_thin.jpg)
 
 [![Build Status](https://dev.azure.com/zeostudio/tuneflow-public/_apis/build/status/tuneflow.tuneflow-py?branchName=main)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
-[![Code Coverage](https://img.shields.io/azure-devops/coverage/zeostudio/tuneflow-public/32/main)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
-[![PyPI](https://img.shields.io/pypi/v/tuneflow-py?color=blue&label=tuneflow-py)](https://pypi.org/project/tuneflow-py/)
+[![Code Coverage](https://img.shields.io/azure-devops/coverage/zeostudio/tuneflow-public/32/main?logo=azure-pipelines)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
+[![PyPI](https://img.shields.io/pypi/v/tuneflow-py?color=blue&label=tuneflow-py&logo=pypi)](https://pypi.org/project/tuneflow-py/)
+![Discord](https://img.shields.io/discord/1076012137161424906?color=%237289da&logo=discord)
 ![License](https://img.shields.io/github/license/tuneflow/tuneflow-py)
 
 ## What is `TuneFlow` and `tuneflow-py`?
