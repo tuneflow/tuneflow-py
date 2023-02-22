@@ -81,4 +81,4 @@ class AudioPlugin:
     def _generate_audio_plugin_instance_id():
         return generate_nanoid(size=10)
 
-    DEFAULT_SYNTH_TFID = get_audio_plugin_tuneflow_id('TuneFlow', 'VST3', 'TFSynth', '1.0.0')
+    DEFAULT_SYNTH_TF_ID = get_audio_plugin_tuneflow_id('TuneFlow', 'VST3', 'TFSynth', '1.0.0')
