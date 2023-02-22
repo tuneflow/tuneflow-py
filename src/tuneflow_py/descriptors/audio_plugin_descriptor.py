@@ -1,10 +1,11 @@
-from typing import TypedDict
+from typing_extensions import TypedDict
+
 
 class AudioPluginDescriptor(TypedDict, total=False):
     '''
     Descriptor of an audio plugin.
     '''
-    
+
     category: str
     '''
     Category of the plugin.

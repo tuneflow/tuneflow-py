@@ -1,6 +1,7 @@
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.widget import WidgetDescriptor
-from typing import TypedDict, Any, Optional
+from typing import Any, Optional
+from typing_extensions import TypedDict
 from enum import Enum
 
 
@@ -53,7 +54,7 @@ class ParamDescriptor(TypedDict, total=False):
     ''' Whether this param is hidden completely. '''
 
     optional: Optional[bool]
-    ''' Whether this param can be left undefined or null. '''
+    ''' Whether this param can be left None. '''
 
     description: Optional[LabelText]
     ''' Explaining what this parameter is for. '''

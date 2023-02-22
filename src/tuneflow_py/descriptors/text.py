@@ -1,1 +1,3 @@
-LabelText = str | dict[str, str]
+from typing import Union, Dict
+
+LabelText = Union[str, Dict[str, str]]

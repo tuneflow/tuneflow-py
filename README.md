@@ -2,13 +2,19 @@
 
 ![TuneFlow Screenshots](docs/images/tuneflow_wall_thin.jpg)
 
+[![Build Status](https://dev.azure.com/zeostudio/tuneflow-public/_apis/build/status/tuneflow.tuneflow-py?branchName=main)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
+[![Code Coverage](https://img.shields.io/azure-devops/coverage/zeostudio/tuneflow-public/32/main?logo=azure-pipelines)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
+[![PyPI](https://img.shields.io/pypi/v/tuneflow-py?color=blue&label=tuneflow-py&logo=pypi)](https://pypi.org/project/tuneflow-py/)
+[![Discord](https://img.shields.io/discord/1076012137161424906?color=%237289da&logo=discord)](https://discord.com/channels/1076012137161424906/1076012755250851860)
+![License](https://img.shields.io/github/license/tuneflow/tuneflow-py)
+
 ## What is `TuneFlow` and `tuneflow-py`?
 
 [TuneFlow](https://www.tuneflow.com) is a next-gen DAW that aims to boost music making productivity through the power of AI. Unlike traditional DAWs, TuneFlow has a plugin system designed to facilitate music production in almost all areas, including but not limited to **song writing**, **arrangement**, **automation**, **mixing**, **transcription**...... You can easily write your own algorithms or integrate your AI models directly into the song-making process. `tuneflow-py` is the Python SDK of TuneFlow plugins.
 
 ## Installation
 
-``` bash
+```bash
 pip install tuneflow-py
 ```
 
@@ -16,8 +22,8 @@ pip install tuneflow-py
 
 Check out the SDKs in other languages:
 
-* **Typescript**: https://www.github.com/tuneflow/tuneflow
-* Other: Contributions welcome!
+- **Typescript**: https://www.github.com/tuneflow/tuneflow
+- Other: Contributions welcome!
 
 ## Getting started
 
@@ -27,7 +33,7 @@ The core idea of TuneFlow's plugin system is that you only care about the data m
 
 A barebone plugin may look like this:
 
-``` python
+```python
 from tuneflow_py import TuneflowPlugin, Song, ReadAPIs, ParamDescriptor
 
 
@@ -47,10 +53,10 @@ class HelloWorld(TuneflowPlugin):
     @staticmethod
     def plugin_display_name():
         return "Hellow World"
-    
+
     def params(self) -> dict[str, ParamDescriptor]:
         return {}
-    
+
     def init(self, song: Song, read_apis: ReadAPIs):
         pass
 
@@ -85,6 +91,9 @@ To debug and run your plugin locally, you can use `tuneflow-devkit-py`. For more
 
 For a comprehensive of example plugins, check out https://www.github.com/tuneflow/tuneflow-py-demos
 
+## Contribute
+
+Checkout [contribution guidelines](./CONTRIBUTE.md).
 
 ## Resources
 

@@ -3,9 +3,8 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
-from tuneflow_py.descriptors.song_access import SongAccess
-from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
-from typing import Optional, Any, TypedDict, Callable
+from tuneflow_py.descriptors.audio_plugin_descriptor import AudioPluginDescriptor
+from typing import Optional, Any, List, Dict
 from tuneflow_py.models.song import Song
 
 
@@ -13,7 +12,7 @@ class ReadAPIs:
     '''
     Read-only APIs used in `init` and `run` methods of a plugin.
     '''
-    
+
     def get_system_locale(self):
         raise Exception("Not implemented")
 
@@ -26,7 +25,7 @@ class ReadAPIs:
     def deserialize_song(self, encoded_song: str):
         raise Exception("Not implemented")
 
-    def get_available_audio_plugins(self) -> list[AudioPluginDescriptor]:
+    def get_available_audio_plugins(self) -> List[AudioPluginDescriptor]:
         raise Exception("Not implemented")
 
 
@@ -100,7 +99,7 @@ class TuneflowPlugin:
         '''
         pass
 
-    def params(self) -> dict[str, ParamDescriptor]:
+    def params(self) -> Dict[str, ParamDescriptor]:
         '''
         Specify params to get from user input.
 
@@ -109,15 +108,6 @@ class TuneflowPlugin:
         If you don't need any param, return `{}`;
         '''
         return {}
-
-    def song_access(self) -> SongAccess:
-        '''
-        Provide the access this plugin needs to modify a song.
-        '''
-        return {
-            "create_track": False,
-            "remove_track": False
-        }
 
     def allow_manual_apply_adjust(self):
         '''
@@ -130,7 +120,7 @@ class TuneflowPlugin:
         '''
         return False
 
-    def run(self, song: Song, params: dict[str, Any], read_apis: ReadAPIs):
+    def run(self, song: Song, params: Dict[str, Any], read_apis: ReadAPIs):
         '''
         The main logic here.
 

@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "tuneflow-py"
-version = "0.0.3"
-authors = [{ name = "Andantei", email = "contact@info.tuneflow.com" }]
+version = "0.1.0"
+authors = [{ name = "TuneFlow", email = "contact@info.tuneflow.com" }]
 description = "Implement your music models and algorithms directly in TuneFlow - The next-gen DAW for the AI era"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -30,7 +30,12 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
-dependencies = ['protobuf == 3.19.4', 'nanoid == 2.0.0']
+dependencies = [
+  'protobuf <= 3.19.4',
+  'nanoid >= 2.0.0',
+  'miditoolkit-light >= 0.1.19',
+  'typing_extensions >= 4.5.0'
+]
 
 [project.urls]
 "Homepage" = "https://github.com/tuneflow/tuneflow-py"
@@ -42,3 +47,6 @@ exclude = ["**/__pycache__", "src/experimental", "src/typestubs"]
 
 reportTypedDictNotRequiredAccess = "warning"
 reportGeneralTypeIssues = "warning"
+
+[tool.autopep8]
+max_line_length = 120
