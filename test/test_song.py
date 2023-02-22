@@ -28,15 +28,15 @@ class TestSong(unittest.TestCase):
             first_track.get_volume_in_db(), -0.6665511534374842)
         self.assertAlmostEqual(song.get_track_at(7).get_pan(), 63)
         # Test track instrument
-        self.assertEqual(first_track.get_instrument().program, 65)
-        self.assertEqual(first_track.get_instrument().is_drum, False)
+        self.assertEqual(first_track.get_instrument().program, 65)  # type:ignore
+        self.assertEqual(first_track.get_instrument().is_drum, False)  # type:ignore
         # Test drum track
         last_track = song.get_track_at(song.get_track_count()-1)
-        self.assertEqual(last_track.get_instrument().program, 0)
-        self.assertEqual(last_track.get_instrument().is_drum, True)
+        self.assertEqual(last_track.get_instrument().program, 0)  # type:ignore
+        self.assertEqual(last_track.get_instrument().is_drum, True)  # type:ignore
         # TODO: Test track automation
         first_clip = first_track.get_clip_at(0)
-        self.assertEqual(first_clip.get_note_count(), 673)
+        self.assertEqual(first_clip.get_raw_note_count(), 673)
         self.assertEqual(first_clip.get_clip_start_tick(), 107520)
         self.assertEqual(first_clip.get_clip_end_tick(), 1326719)
         first_note = first_clip.get_raw_note_at(0)

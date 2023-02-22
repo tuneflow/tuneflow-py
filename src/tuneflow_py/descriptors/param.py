@@ -54,7 +54,7 @@ class ParamDescriptor(TypedDict, total=False):
     ''' Whether this param is hidden completely. '''
 
     optional: Optional[bool]
-    ''' Whether this param can be left undefined or null. '''
+    ''' Whether this param can be left None. '''
 
     description: Optional[LabelText]
     ''' Explaining what this parameter is for. '''

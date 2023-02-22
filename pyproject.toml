@@ -47,3 +47,6 @@ exclude = ["**/__pycache__", "src/experimental", "src/typestubs"]
 
 reportTypedDictNotRequiredAccess = "warning"
 reportGeneralTypeIssues = "warning"
+
+[tool.autopep8]
+max_line_length = 120

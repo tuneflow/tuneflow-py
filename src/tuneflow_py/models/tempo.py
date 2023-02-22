@@ -3,7 +3,9 @@ from tuneflow_py.models.protos import song_pb2
 
 
 class TempoEvent:
-    def __init__(self, ticks: int | None = None, bpm: float | None = None, time: float | None = None, proto: song_pb2.TempoEvent | None = None):
+    def __init__(
+            self, ticks: int | None = None, bpm: float | None = None, time: float | None = None, proto: song_pb2.TempoEvent |
+            None = None):
         if proto is not None:
             self._proto = proto
         else:
@@ -21,3 +23,6 @@ class TempoEvent:
 
     def get_time(self) -> float:
         return self._proto.time
+
+    def __repr__(self) -> str:
+        return str(self._proto)

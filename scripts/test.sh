@@ -1,1 +1,1 @@
-pytest --doctest-modules --junitxml=junit/test-results.xml --cov=src --cov-report=xml
+pytest --doctest-modules --junitxml=junit/test-results.xml --cov=src --cov-report=xml --cov-report=html

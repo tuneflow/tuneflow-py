@@ -1,7 +1,7 @@
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
-from tuneflow_py.descriptors.audio_plugin import AudioPluginDescriptor
+from tuneflow_py.descriptors.audio_plugin_descriptor import AudioPluginDescriptor
 from typing import Optional, Any, List, Dict
 from tuneflow_py.models.song import Song
 

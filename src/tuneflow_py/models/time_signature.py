@@ -3,7 +3,8 @@ from tuneflow_py.models.protos import song_pb2
 
 
 class TimeSignatureEvent:
-    def __init__(self, ticks: int | None = None, numerator: int | None = None, denominator: int | None = None, proto: song_pb2.TimeSignatureEvent | None = None):
+    def __init__(self, ticks: int | None = None, numerator: int | None = None, denominator: int | None = None,
+                 proto: song_pb2.TimeSignatureEvent | None = None):
         if proto is not None:
             self._proto = proto
         else:
@@ -29,3 +30,6 @@ class TimeSignatureEvent:
 
     def set_denominator(self, denominator: int):
         self._proto.denominator = denominator
+
+    def __repr__(self) -> str:
+        return str(self._proto)

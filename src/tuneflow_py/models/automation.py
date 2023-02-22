@@ -5,7 +5,9 @@ AutomationTargetType = song_pb2.AutomationTarget.TargetType
 
 
 class AutomationTarget:
-    def __init__(self, type: AutomationTargetType | None = None, plugin_instance_id: str | None = None, param_id: str | None = None, proto: song_pb2.AutomationTarget | None = None) -> None:
+    def __init__(
+            self, type: AutomationTargetType | None = None, plugin_instance_id: str | None = None, param_id: str | None = None,
+            proto: song_pb2.AutomationTarget | None = None) -> None:
         if proto is not None:
             self._proto = proto
         else:
@@ -23,7 +25,7 @@ class AutomationTarget:
 
     def set_plugin_instance_id(self, plugin_instance_id: str | None = None):
         if plugin_instance_id is None:
-            del self._proto.audio_plugin_id
+            self._proto.ClearField("audio_plugin_id")
         else:
             self._proto.audio_plugin_id = plugin_instance_id
 
@@ -32,15 +34,21 @@ class AutomationTarget:
 
     def set_param_id(self, param_id: str | None = None):
         if param_id is None:
-            del self._proto.param_id
+            self._proto.ClearField("param_id")
         else:
             self._proto.param_id = param_id
 
     def to_tf_automation_target_id(self):
         '''
-        Gets a unique id that identifies this target type.
+        Gets a unique string id that identifies this target type.
         '''
-        return AutomationTarget.encode_automation_target(self.get_type(), self.get_plugin_instance_id(), self.get_param_id())
+        return AutomationTarget.encode_automation_target(
+            self.get_type(),
+            self.get_plugin_instance_id(),
+            self.get_param_id())
+
+    def __repr__(self) -> str:
+        return str(self._proto)
 
     @staticmethod
     def encode_automation_target(

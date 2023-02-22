@@ -61,6 +61,9 @@ def greater_equal(sorted_list: list, val, key: Callable | None = None, low: int 
 
 
 def greater_than(sorted_list: list, val, key: Callable | None = None, low: int | None = None, high: int | None = None):
+    '''
+    Returns the index of the first item in the array > val. This is the same as a successor query.
+    '''
     low = low if low is not None else 0
     high = high if high is not None else len(sorted_list) - 1
     i = high + 1
@@ -77,6 +80,9 @@ def greater_than(sorted_list: list, val, key: Callable | None = None, low: int |
 
 
 def lower_than(sorted_list: list, val, key: Callable | None = None, low: int | None = None, high: int | None = None):
+    '''
+    Returns the index of the last item in the array < val. This is the same as a predecessor query.
+    '''
     low = low if low is not None else 0
     high = high if high is not None else len(sorted_list) - 1
     i = low - 1
@@ -93,6 +99,9 @@ def lower_than(sorted_list: list, val, key: Callable | None = None, low: int | N
 
 
 def lower_equal(sorted_list: list, val, key: Callable | None = None, low: int | None = None, high: int | None = None):
+    '''
+    Returns the index of the last item in the array <= val. This is a predecessor query which also returns the item if present.
+    '''
     low = low if low is not None else 0
     high = high if high is not None else len(sorted_list) - 1
     i = low - 1
@@ -109,6 +118,9 @@ def lower_equal(sorted_list: list, val, key: Callable | None = None, low: int | 
 
 
 def eq(sorted_list: list, val, key: Callable | None = None, low: int | None = None, high: int | None = None):
+    '''
+    Returns an index of some item in the array == y or -1 if the item is not present.
+    '''
     low = low if low is not None else 0
     high = high if high is not None else len(sorted_list) - 1
     while low <= high:
@@ -122,3 +134,73 @@ def eq(sorted_list: list, val, key: Callable | None = None, low: int | None = No
         else:
             high = m - 1
     return -1
+
+
+def get_audio_plugin_tuneflow_id(
+    manufacturer_name: str,
+    plugin_format_name: str,
+    plugin_name: str,
+    plugin_version: str,
+):
+    '''
+    Gets an id that Tuneflow can uniquely identify a plugin.
+    '''
+    return f'{manufacturer_name} // {plugin_format_name} // {plugin_name} // {plugin_version}'
+
+
+def get_audio_plugin_versionless_tuneflow_id(
+    manufacturer_name: str,
+    plugin_format_name: str,
+    plugin_name: str,
+):
+    '''
+    Gets an id that Tuneflow can uniquely identify a plugin regardless of version.
+    '''
+    return f'{manufacturer_name} // {plugin_format_name} // {plugin_name}'
+
+
+def decode_audio_plugin_tuneflow_id(tf_id: str):
+    parts = tf_id.split(' // ')
+    if len(parts) < 4:
+        raise Exception('Invalid audio plugin tuneflow id.')
+
+    return {
+        "name": parts[2],
+        "manufacturer_name": parts[0],
+        "plugin_format_name": parts[1],
+        "plugin_version": parts[3],
+    }
+
+
+def to_versionless_tf_id(tf_id: str):
+    '''
+    Converts a full tf_id to a versionless tf_id.
+    @param tf_id A full tf_id
+    @returns A versionless tf_id
+    '''
+    parts = decode_audio_plugin_tuneflow_id(tf_id)
+    return get_audio_plugin_versionless_tuneflow_id(
+        parts["manufacturer_name"],
+        parts["plugin_format_name"],
+        parts["name"],
+    )
+
+
+def are_tuneflow_ids_equal(tf_id1: str, tf_id2: str):
+    return tf_id1 == tf_id2
+
+
+def are_tuneflow_ids_equal_ignore_version(tf_id1: str, tf_id2: str):
+    parsed_id1 = decode_audio_plugin_tuneflow_id(tf_id1)
+    parsed_id2 = decode_audio_plugin_tuneflow_id(tf_id2)
+    if len(parsed_id1) != len(parsed_id2):
+        return False
+
+    for key in parsed_id1:
+        if (key == 'plugin_version'):
+            continue
+        if key not in parsed_id2:
+            return False
+        if parsed_id1[key] != parsed_id2[key]:
+            return False
+    return True
