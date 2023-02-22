@@ -52,3 +52,16 @@ class Track:
     
     def get_type(self) -> int:
         return self._proto.type
+
+    def create_clip(self, type: int,
+                    clip_start_tick: int,
+                    clip_end_tick: int):
+        new_clip = Clip(type=type, track=self, clip_start_tick=clip_start_tick, clip_end_tick=clip_end_tick)
+        return new_clip
+
+    def insert_clip(self, index: int, clip: Clip):
+        self._proto.clips.insert(index, clip._proto)
+    
+    def print_all_clips(self):
+        for clip in self.get_clips():
+            print(clip._proto)

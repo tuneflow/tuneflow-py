@@ -42,12 +42,14 @@ class Song:
         return Song(proto=song_proto)
 
     def create_track(self, type: int,
-                     index: int,
                      rank: int | None =None):
         new_track = Track(
             type=type, song=self, rank=rank if rank is not None else self.get_next_track_rank())
-        self._proto.tracks.insert(index, new_track._proto)
+        # self._proto.tracks.insert(index, new_track._proto)
         return new_track
+
+    def insert_track(self, index: int, track: Track):
+        self._proto.tracks.insert(index, track._proto)
 
     def get_next_track_rank(self):
         return 1 if len(self._proto.tracks) == 0 else max([track.rank for track in self._proto.tracks]) + 1
