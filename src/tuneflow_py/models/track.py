@@ -1,4 +1,5 @@
 from __future__ import annotations
+from tuneflow_py.descriptors.clip_descriptor import AudioClipData
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.clip import Clip, ClipType
 from tuneflow_py.models.audio_plugin import AudioPlugin
@@ -263,7 +264,7 @@ class Track:
         return clip
 
     def create_audio_clip(
-            self, clip_start_tick: int, audio_clip_data, clip_end_tick: int | None = None, insert_clip=True):
+            self, clip_start_tick: int, audio_clip_data: AudioClipData, clip_end_tick: int | None = None, insert_clip=True):
         '''
         Creates an audio clip and optionally inserts it into the track.
 

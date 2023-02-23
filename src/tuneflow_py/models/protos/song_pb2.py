@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nsong.proto\x12\x04song\"\x7f\n\x04Note\x12\r\n\x05pitch\x18\x01 \x01(\x05\x12\x10\n\x08velocity\x18\x02 \x01(\x05\x12\x12\n\nstart_tick\x18\x03 \x01(\x05\x12\x12\n\nstart_time\x18\x04 \x01(\x02\x12\x10\n\x08\x65nd_tick\x18\x05 \x01(\x05\x12\x10\n\x08\x65nd_time\x18\x06 \x01(\x02\x12\n\n\x02id\x18\x07 \x01(\r\"6\n\nTempoEvent\x12\r\n\x05ticks\x18\x01 \x01(\x05\x12\x0b\n\x03\x62pm\x18\x02 \x01(\x02\x12\x0c\n\x04time\x18\x03 \x01(\x02\"K\n\x12TimeSignatureEvent\x12\r\n\x05ticks\x18\x01 \x01(\x05\x12\x11\n\tnumerator\x18\x02 \x01(\x05\x12\x13\n\x0b\x64\x65nominator\x18\x03 \x01(\x05\"2\n\x0eInstrumentInfo\x12\x0f\n\x07program\x18\x01 \x01(\x05\x12\x0f\n\x07is_drum\x18\x02 \x01(\x08\"f\n\x0f\x41udioPluginInfo\x12\r\n\x05tf_id\x18\x01 \x01(\t\x12\x12\n\nis_enabled\x18\x02 \x01(\x08\x12\x19\n\x11local_instance_id\x18\x03 \x01(\t\x12\x15\n\rbase64_states\x18\x04 \x01(\t\"\xb2\x01\n\x10\x41utomationTarget\x12/\n\x04type\x18\x01 \x01(\x0e\x32!.song.AutomationTarget.TargetType\x12\x17\n\x0f\x61udio_plugin_id\x18\x02 \x01(\t\x12\x10\n\x08param_id\x18\x03 \x01(\t\"B\n\nTargetType\x12\r\n\tUNDEFINED\x10\x00\x12\n\n\x06VOLUME\x10\x01\x12\x07\n\x03PAN\x10\x02\x12\x10\n\x0c\x41UDIO_PLUGIN\x10\x03\"\x8c\x01\n\x0f\x41utomationValue\x12\x30\n\x06points\x18\x01 \x03(\x0b\x32 .song.AutomationValue.ParamValue\x12\x10\n\x08\x64isabled\x18\x02 \x01(\x08\x1a\x35\n\nParamValue\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x02\x12\n\n\x02id\x18\x03 \x01(\x05\"\xc4\x01\n\x0e\x41utomationData\x12\'\n\x07targets\x18\x01 \x03(\x0b\x32\x16.song.AutomationTarget\x12=\n\rtarget_values\x18\x02 \x03(\x0b\x32&.song.AutomationData.TargetValuesEntry\x1aJ\n\x11TargetValuesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12$\n\x05value\x18\x02 \x01(\x0b\x32\x15.song.AutomationValue:\x02\x38\x01\"\xef\x01\n\tTrackSend\x12\x17\n\x0foutput_bus_rank\x18\x01 \x01(\x05\x12\x12\n\ngain_level\x18\x02 \x01(\x02\x12\x33\n\x08position\x18\x03 \x01(\x0e\x32!.song.TrackSend.TrackSendPosition\x12\r\n\x05muted\x18\x04 \x01(\x08\"q\n\x11TrackSendPosition\x12!\n\x1dUNDEFINED_TRACK_SEND_POSITION\x10\x00\x12\x1b\n\x17SEND_POSITION_PRE_FADER\x10\x01\x12\x1c\n\x18SEND_POSITION_POST_FADER\x10\x02\"\xca\x01\n\x0bTrackOutput\x12/\n\x04type\x18\x01 \x01(\x0e\x32!.song.TrackOutput.TrackOutputType\x12\x10\n\x08track_id\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65vice_name\x18\x03 \x01(\t\"c\n\x0fTrackOutputType\x12\x1f\n\x1bUNDEFINED_TRACK_OUTPUT_TYPE\x10\x00\x12\x17\n\x13TRACK_OUTPUT_DEVICE\x10\x01\x12\x16\n\x12TRACK_OUTPUT_TRACK\x10\x02\"&\n\x0c\x41uxTrackData\x12\x16\n\x0einput_bus_rank\x18\x01 \x01(\x05\"\xe2\x05\n\x05Track\x12(\n\ninstrument\x18\x01 \x01(\x0b\x32\x14.song.InstrumentInfo\x12\x1d\n\x05notes\x18\x02 \x03(\x0b\x32\n.song.NoteB\x02\x18\x01\x12\x33\n\x15suggested_instruments\x18\x03 \x03(\x0b\x32\x14.song.InstrumentInfo\x12\x0c\n\x04uuid\x18\x04 \x01(\t\x12\x0e\n\x06volume\x18\x05 \x01(\x02\x12\x0c\n\x04solo\x18\x06 \x01(\x08\x12\r\n\x05muted\x18\x07 \x01(\x08\x12\x0c\n\x04rank\x18\x08 \x01(\x05\x12\x18\n\x10track_start_tick\x18\t \x01(\x05\x12\x16\n\x0etrack_end_tick\x18\n \x01(\x05\x12-\n\x0esampler_plugin\x18\x0b \x01(\x0b\x32\x15.song.AudioPluginInfo\x12\x32\n\x0c\x61udio_plugin\x18\x0c \x03(\x0b\x32\x1c.song.Track.AudioPluginEntry\x12\x19\n\x05\x63lips\x18\r \x03(\x0b\x32\n.song.Clip\x12\x0b\n\x03pan\x18\x0e \x01(\x05\x12\x0c\n\x04name\x18\x0f \x01(\t\x12(\n\nautomation\x18\x10 \x01(\x0b\x32\x14.song.AutomationData\x12\x1d\n\x04type\x18\x11 \x01(\x0e\x32\x0f.song.TrackType\x12*\n\x0e\x61ux_track_data\x18\x12 \x01(\x0b\x32\x12.song.AuxTrackData\x12%\n\x05sends\x18\x13 \x03(\x0b\x32\x16.song.Track.SendsEntry\x12!\n\x06output\x18\x14 \x01(\x0b\x32\x11.song.TrackOutput\x1aI\n\x10\x41udioPluginEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12$\n\x05value\x18\x02 \x01(\x0b\x32\x15.song.AudioPluginInfo:\x02\x38\x01\x1a=\n\nSendsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\x1e\n\x05value\x18\x02 \x01(\x0b\x32\x0f.song.TrackSend:\x02\x38\x01\"N\n\rAudioClipData\x12\x17\n\x0f\x61udio_file_path\x18\x01 \x01(\t\x12\x12\n\nstart_tick\x18\x02 \x01(\x05\x12\x10\n\x08\x64uration\x18\x03 \x01(\x01\"\xb7\x01\n\x04\x43lip\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63lip_start_tick\x18\x02 \x01(\x05\x12\x15\n\rclip_end_tick\x18\x03 \x01(\x05\x12\x19\n\x05notes\x18\x04 \x03(\x0b\x32\n.song.Note\x12\x0c\n\x04name\x18\x05 \x01(\t\x12\x1c\n\x04type\x18\x06 \x01(\x0e\x32\x0e.song.ClipType\x12,\n\x0f\x61udio_clip_data\x18\x07 \x01(\x0b\x32\x13.song.AudioClipData\"\xa9\x01\n\x0fStructureMarker\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x31\n\x04type\x18\x02 \x01(\x0e\x32#.song.StructureMarker.StructureType\"U\n\rStructureType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\t\n\x05INTRO\x10\x01\x12\t\n\x05VERSE\x10\x02\x12\n\n\x06\x43HORUS\x10\x03\x12\n\n\x06\x42RIDGE\x10\x04\x12\t\n\x05OUTRO\x10\x05\"!\n\x03\x42us\x12\x0c\n\x04rank\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"\x92\x02\n\x04Song\x12\x0b\n\x03PPQ\x18\x01 \x01(\x05\x12 \n\x06tempos\x18\x02 \x03(\x0b\x32\x10.song.TempoEvent\x12\x31\n\x0ftime_signatures\x18\x03 \x03(\x0b\x32\x18.song.TimeSignatureEvent\x12\x11\n\tlast_tick\x18\x04 \x01(\x05\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x1b\n\x06tracks\x18\x06 \x03(\x0b\x32\x0b.song.Track\x12!\n\x0cmaster_track\x18\x07 \x01(\x0b\x32\x0b.song.Track\x12)\n\nstructures\x18\x08 \x03(\x0b\x32\x15.song.StructureMarker\x12\x18\n\x05\x62uses\x18\t \x03(\x0b\x32\t.song.Bus*b\n\tTrackType\x12\x13\n\x0fUNDEFINED_TRACK\x10\x00\x12\x0e\n\nMIDI_TRACK\x10\x01\x12\x0f\n\x0b\x41UDIO_TRACK\x10\x02\x12\x10\n\x0cMASTER_TRACK\x10\x03\x12\r\n\tAUX_TRACK\x10\x04*=\n\x08\x43lipType\x12\x12\n\x0eUNDEFINED_CLIP\x10\x00\x12\r\n\tMIDI_CLIP\x10\x01\x12\x0e\n\nAUDIO_CLIP\x10\x02'
+  serialized_pb=b'\n\nsong.proto\x12\x04song\"\x7f\n\x04Note\x12\r\n\x05pitch\x18\x01 \x01(\x05\x12\x10\n\x08velocity\x18\x02 \x01(\x05\x12\x12\n\nstart_tick\x18\x03 \x01(\x05\x12\x12\n\nstart_time\x18\x04 \x01(\x02\x12\x10\n\x08\x65nd_tick\x18\x05 \x01(\x05\x12\x10\n\x08\x65nd_time\x18\x06 \x01(\x02\x12\n\n\x02id\x18\x07 \x01(\r\"6\n\nTempoEvent\x12\r\n\x05ticks\x18\x01 \x01(\x05\x12\x0b\n\x03\x62pm\x18\x02 \x01(\x02\x12\x0c\n\x04time\x18\x03 \x01(\x02\"K\n\x12TimeSignatureEvent\x12\r\n\x05ticks\x18\x01 \x01(\x05\x12\x11\n\tnumerator\x18\x02 \x01(\x05\x12\x13\n\x0b\x64\x65nominator\x18\x03 \x01(\x05\"2\n\x0eInstrumentInfo\x12\x0f\n\x07program\x18\x01 \x01(\x05\x12\x0f\n\x07is_drum\x18\x02 \x01(\x08\"f\n\x0f\x41udioPluginInfo\x12\r\n\x05tf_id\x18\x01 \x01(\t\x12\x12\n\nis_enabled\x18\x02 \x01(\x08\x12\x19\n\x11local_instance_id\x18\x03 \x01(\t\x12\x15\n\rbase64_states\x18\x04 \x01(\t\"\xb2\x01\n\x10\x41utomationTarget\x12/\n\x04type\x18\x01 \x01(\x0e\x32!.song.AutomationTarget.TargetType\x12\x17\n\x0f\x61udio_plugin_id\x18\x02 \x01(\t\x12\x10\n\x08param_id\x18\x03 \x01(\t\"B\n\nTargetType\x12\r\n\tUNDEFINED\x10\x00\x12\n\n\x06VOLUME\x10\x01\x12\x07\n\x03PAN\x10\x02\x12\x10\n\x0c\x41UDIO_PLUGIN\x10\x03\"\x8c\x01\n\x0f\x41utomationValue\x12\x30\n\x06points\x18\x01 \x03(\x0b\x32 .song.AutomationValue.ParamValue\x12\x10\n\x08\x64isabled\x18\x02 \x01(\x08\x1a\x35\n\nParamValue\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x02\x12\n\n\x02id\x18\x03 \x01(\x05\"\xc4\x01\n\x0e\x41utomationData\x12\'\n\x07targets\x18\x01 \x03(\x0b\x32\x16.song.AutomationTarget\x12=\n\rtarget_values\x18\x02 \x03(\x0b\x32&.song.AutomationData.TargetValuesEntry\x1aJ\n\x11TargetValuesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12$\n\x05value\x18\x02 \x01(\x0b\x32\x15.song.AutomationValue:\x02\x38\x01\"\xef\x01\n\tTrackSend\x12\x17\n\x0foutput_bus_rank\x18\x01 \x01(\x05\x12\x12\n\ngain_level\x18\x02 \x01(\x02\x12\x33\n\x08position\x18\x03 \x01(\x0e\x32!.song.TrackSend.TrackSendPosition\x12\r\n\x05muted\x18\x04 \x01(\x08\"q\n\x11TrackSendPosition\x12!\n\x1dUNDEFINED_TRACK_SEND_POSITION\x10\x00\x12\x1b\n\x17SEND_POSITION_PRE_FADER\x10\x01\x12\x1c\n\x18SEND_POSITION_POST_FADER\x10\x02\"\xca\x01\n\x0bTrackOutput\x12/\n\x04type\x18\x01 \x01(\x0e\x32!.song.TrackOutput.TrackOutputType\x12\x10\n\x08track_id\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65vice_name\x18\x03 \x01(\t\"c\n\x0fTrackOutputType\x12\x1f\n\x1bUNDEFINED_TRACK_OUTPUT_TYPE\x10\x00\x12\x17\n\x13TRACK_OUTPUT_DEVICE\x10\x01\x12\x16\n\x12TRACK_OUTPUT_TRACK\x10\x02\"&\n\x0c\x41uxTrackData\x12\x16\n\x0einput_bus_rank\x18\x01 \x01(\x05\"\xe2\x05\n\x05Track\x12(\n\ninstrument\x18\x01 \x01(\x0b\x32\x14.song.InstrumentInfo\x12\x1d\n\x05notes\x18\x02 \x03(\x0b\x32\n.song.NoteB\x02\x18\x01\x12\x33\n\x15suggested_instruments\x18\x03 \x03(\x0b\x32\x14.song.InstrumentInfo\x12\x0c\n\x04uuid\x18\x04 \x01(\t\x12\x0e\n\x06volume\x18\x05 \x01(\x02\x12\x0c\n\x04solo\x18\x06 \x01(\x08\x12\r\n\x05muted\x18\x07 \x01(\x08\x12\x0c\n\x04rank\x18\x08 \x01(\x05\x12\x18\n\x10track_start_tick\x18\t \x01(\x05\x12\x16\n\x0etrack_end_tick\x18\n \x01(\x05\x12-\n\x0esampler_plugin\x18\x0b \x01(\x0b\x32\x15.song.AudioPluginInfo\x12\x32\n\x0c\x61udio_plugin\x18\x0c \x03(\x0b\x32\x1c.song.Track.AudioPluginEntry\x12\x19\n\x05\x63lips\x18\r \x03(\x0b\x32\n.song.Clip\x12\x0b\n\x03pan\x18\x0e \x01(\x05\x12\x0c\n\x04name\x18\x0f \x01(\t\x12(\n\nautomation\x18\x10 \x01(\x0b\x32\x14.song.AutomationData\x12\x1d\n\x04type\x18\x11 \x01(\x0e\x32\x0f.song.TrackType\x12*\n\x0e\x61ux_track_data\x18\x12 \x01(\x0b\x32\x12.song.AuxTrackData\x12%\n\x05sends\x18\x13 \x03(\x0b\x32\x16.song.Track.SendsEntry\x12!\n\x06output\x18\x14 \x01(\x0b\x32\x11.song.TrackOutput\x1aI\n\x10\x41udioPluginEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12$\n\x05value\x18\x02 \x01(\x0b\x32\x15.song.AudioPluginInfo:\x02\x38\x01\x1a=\n\nSendsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\x1e\n\x05value\x18\x02 \x01(\x0b\x32\x0f.song.TrackSend:\x02\x38\x01\")\n\tAudioData\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x0e\n\x06\x66ormat\x18\x02 \x01(\t\"s\n\rAudioClipData\x12\x17\n\x0f\x61udio_file_path\x18\x01 \x01(\t\x12\x12\n\nstart_tick\x18\x02 \x01(\x05\x12\x10\n\x08\x64uration\x18\x03 \x01(\x01\x12#\n\naudio_data\x18\x04 \x01(\x0b\x32\x0f.song.AudioData\"\xb7\x01\n\x04\x43lip\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63lip_start_tick\x18\x02 \x01(\x05\x12\x15\n\rclip_end_tick\x18\x03 \x01(\x05\x12\x19\n\x05notes\x18\x04 \x03(\x0b\x32\n.song.Note\x12\x0c\n\x04name\x18\x05 \x01(\t\x12\x1c\n\x04type\x18\x06 \x01(\x0e\x32\x0e.song.ClipType\x12,\n\x0f\x61udio_clip_data\x18\x07 \x01(\x0b\x32\x13.song.AudioClipData\"\xa9\x01\n\x0fStructureMarker\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x31\n\x04type\x18\x02 \x01(\x0e\x32#.song.StructureMarker.StructureType\"U\n\rStructureType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\t\n\x05INTRO\x10\x01\x12\t\n\x05VERSE\x10\x02\x12\n\n\x06\x43HORUS\x10\x03\x12\n\n\x06\x42RIDGE\x10\x04\x12\t\n\x05OUTRO\x10\x05\"!\n\x03\x42us\x12\x0c\n\x04rank\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"\x92\x02\n\x04Song\x12\x0b\n\x03PPQ\x18\x01 \x01(\x05\x12 \n\x06tempos\x18\x02 \x03(\x0b\x32\x10.song.TempoEvent\x12\x31\n\x0ftime_signatures\x18\x03 \x03(\x0b\x32\x18.song.TimeSignatureEvent\x12\x11\n\tlast_tick\x18\x04 \x01(\x05\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x1b\n\x06tracks\x18\x06 \x03(\x0b\x32\x0b.song.Track\x12!\n\x0cmaster_track\x18\x07 \x01(\x0b\x32\x0b.song.Track\x12)\n\nstructures\x18\x08 \x03(\x0b\x32\x15.song.StructureMarker\x12\x18\n\x05\x62uses\x18\t \x03(\x0b\x32\t.song.Bus*b\n\tTrackType\x12\x13\n\x0fUNDEFINED_TRACK\x10\x00\x12\x0e\n\nMIDI_TRACK\x10\x01\x12\x0f\n\x0b\x41UDIO_TRACK\x10\x02\x12\x10\n\x0cMASTER_TRACK\x10\x03\x12\r\n\tAUX_TRACK\x10\x04*=\n\x08\x43lipType\x12\x12\n\x0eUNDEFINED_CLIP\x10\x00\x12\r\n\tMIDI_CLIP\x10\x01\x12\x0e\n\nAUDIO_CLIP\x10\x02'
 )
 
 _TRACKTYPE = _descriptor.EnumDescriptor(
@@ -58,8 +58,8 @@ _TRACKTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2939,
-  serialized_end=3037,
+  serialized_start=3019,
+  serialized_end=3117,
 )
 _sym_db.RegisterEnumDescriptor(_TRACKTYPE)
 
@@ -89,8 +89,8 @@ _CLIPTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3039,
-  serialized_end=3100,
+  serialized_start=3119,
+  serialized_end=3180,
 )
 _sym_db.RegisterEnumDescriptor(_CLIPTYPE)
 
@@ -240,8 +240,8 @@ _STRUCTUREMARKER_STRUCTURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2540,
-  serialized_end=2625,
+  serialized_start=2620,
+  serialized_end=2705,
 )
 _sym_db.RegisterEnumDescriptor(_STRUCTUREMARKER_STRUCTURETYPE)
 
@@ -1086,6 +1086,45 @@ _TRACK = _descriptor.Descriptor(
 )
 
 
+_AUDIODATA = _descriptor.Descriptor(
+  name='AudioData',
+  full_name='song.AudioData',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='data', full_name='song.AudioData.data', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='format', full_name='song.AudioData.format', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2189,
+  serialized_end=2230,
+)
+
+
 _AUDIOCLIPDATA = _descriptor.Descriptor(
   name='AudioClipData',
   full_name='song.AudioClipData',
@@ -1115,6 +1154,13 @@ _AUDIOCLIPDATA = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='audio_data', full_name='song.AudioClipData.audio_data', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1127,8 +1173,8 @@ _AUDIOCLIPDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2189,
-  serialized_end=2267,
+  serialized_start=2232,
+  serialized_end=2347,
 )
 
 
@@ -1201,8 +1247,8 @@ _CLIP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2270,
-  serialized_end=2453,
+  serialized_start=2350,
+  serialized_end=2533,
 )
 
 
@@ -1241,8 +1287,8 @@ _STRUCTUREMARKER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2456,
-  serialized_end=2625,
+  serialized_start=2536,
+  serialized_end=2705,
 )
 
 
@@ -1280,8 +1326,8 @@ _BUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2627,
-  serialized_end=2660,
+  serialized_start=2707,
+  serialized_end=2740,
 )
 
 
@@ -1368,8 +1414,8 @@ _SONG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2663,
-  serialized_end=2937,
+  serialized_start=2743,
+  serialized_end=3017,
 )
 
 _AUTOMATIONTARGET.fields_by_name['type'].enum_type = _AUTOMATIONTARGET_TARGETTYPE
@@ -1399,6 +1445,7 @@ _TRACK.fields_by_name['type'].enum_type = _TRACKTYPE
 _TRACK.fields_by_name['aux_track_data'].message_type = _AUXTRACKDATA
 _TRACK.fields_by_name['sends'].message_type = _TRACK_SENDSENTRY
 _TRACK.fields_by_name['output'].message_type = _TRACKOUTPUT
+_AUDIOCLIPDATA.fields_by_name['audio_data'].message_type = _AUDIODATA
 _CLIP.fields_by_name['notes'].message_type = _NOTE
 _CLIP.fields_by_name['type'].enum_type = _CLIPTYPE
 _CLIP.fields_by_name['audio_clip_data'].message_type = _AUDIOCLIPDATA
@@ -1422,6 +1469,7 @@ DESCRIPTOR.message_types_by_name['TrackSend'] = _TRACKSEND
 DESCRIPTOR.message_types_by_name['TrackOutput'] = _TRACKOUTPUT
 DESCRIPTOR.message_types_by_name['AuxTrackData'] = _AUXTRACKDATA
 DESCRIPTOR.message_types_by_name['Track'] = _TRACK
+DESCRIPTOR.message_types_by_name['AudioData'] = _AUDIODATA
 DESCRIPTOR.message_types_by_name['AudioClipData'] = _AUDIOCLIPDATA
 DESCRIPTOR.message_types_by_name['Clip'] = _CLIP
 DESCRIPTOR.message_types_by_name['StructureMarker'] = _STRUCTUREMARKER
@@ -1546,6 +1594,13 @@ Track = _reflection.GeneratedProtocolMessageType('Track', (_message.Message,), {
 _sym_db.RegisterMessage(Track)
 _sym_db.RegisterMessage(Track.AudioPluginEntry)
 _sym_db.RegisterMessage(Track.SendsEntry)
+
+AudioData = _reflection.GeneratedProtocolMessageType('AudioData', (_message.Message,), {
+  'DESCRIPTOR' : _AUDIODATA,
+  '__module__' : 'song_pb2'
+  # @@protoc_insertion_point(class_scope:song.AudioData)
+  })
+_sym_db.RegisterMessage(AudioData)
 
 AudioClipData = _reflection.GeneratedProtocolMessageType('AudioClipData', (_message.Message,), {
   'DESCRIPTOR' : _AUDIOCLIPDATA,

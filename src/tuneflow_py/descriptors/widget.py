@@ -28,41 +28,42 @@ class WidgetType(Enum):
     SelectList = 15
     # Read-only table of descriptions.
     Descriptions = 16
+    TextArea = 17
 
 
 class SliderWidgetConfig(TypedDict, total=False):
-    min_value: RealNumber
-    max_value: RealNumber
+    minValue: RealNumber
+    maxValue: RealNumber
     step: RealNumber
     unit: Optional[str]
 
 
 class InputWidgetConfig(TypedDict, total=False):
-    min_value: RealNumber
-    max_value: RealNumber
+    minValue: RealNumber
+    maxValue: RealNumber
     step: RealNumber
 
 
 class TrackSelectorWidgetConfig(TypedDict, total=False):
-    always_show_track_info: Optional[bool]
+    alwaysShowTrackInfo: Optional[bool]
     '''  Whether to always show the track info. Default to false. '''
 
-    allowed_track_types: Optional[List[TrackType]]  # type: ignore
+    allowedTrackTypes: Optional[List[TrackType]]  # type: ignore
     ''' If specified, only the allowed types of tracks can be selected. '''
 
 
 class PitchWidgetConfig(TypedDict, total=False):
-    min_allowed_pitch: Optional[RealNumber]
-    max_allowed_pitch: Optional[RealNumber]
+    minAllowedPitch: Optional[RealNumber]
+    maxAllowedPitch: Optional[RealNumber]
 
 
 class TrackPitchSelectorWidgetConfig(TypedDict, total=False):
-    track_selector_config: TrackSelectorWidgetConfig
-    pitch_selector_config: PitchWidgetConfig
+    trackSelectorConfig: TrackSelectorWidgetConfig
+    pitchSelectorConfig: PitchWidgetConfig
 
 
 class InstrumentSelectorWidgetConfig(TypedDict, total=False):
-    disabled_programs: Optional[List[RealNumber]]
+    disabledPrograms: Optional[List[RealNumber]]
     ''' Not supported yet. '''
 
 
@@ -74,21 +75,21 @@ class SelectWidgetOption(TypedDict, total=False):
 class SelectWidgetConfig(TypedDict, total=False):
     options: List[SelectWidgetOption]
 
-    allow_search: Optional[bool]
+    allowSearch: Optional[bool]
     ''' Whether to show search box. Default to false. '''
 
     placeholder: LabelText
 
-    virtual_list_props: Optional[Any]
+    virtualListProps: Optional[Any]
     ''' https://arco.design/vue/component/select#virtual-list '''
 
-    populate_options_with_generatable_styles: Optional[bool]
+    populateOptionsWithGeneratableStyles: Optional[bool]
     '''
     Whether to populate the options with the styles that
     TuneFlow can generate.
     '''
 
-    populate_options_with_generatable_tempos: Optional[bool]
+    populateOptionsWithGeneratableTempos: Optional[bool]
     '''
     Whether to populate the options with the tempo settings that
     TuneFlow can generate with.
@@ -97,12 +98,12 @@ class SelectWidgetConfig(TypedDict, total=False):
 
 class SelectListWidgetConfig(TypedDict, total=False):
     options: List[SelectWidgetOption]
-    max_height: Optional[RealNumber]
+    maxHeight: Optional[RealNumber]
     size: Optional[str]
-    virtual_list_props: Optional[Any]
+    virtualListProps: Optional[Any]
     ''' https://arco.design/vue/component/list '''
 
-    allow_search: Optional[bool]
+    allowSearch: Optional[bool]
 
 
 class SwitchWidgetConfig(TypedDict, total=False):
@@ -115,16 +116,16 @@ class SwitchWidgetConfig(TypedDict, total=False):
 
 
 class InputNumberWidgetConfig(TypedDict, total=False):
-    min_value: RealNumber
-    max_value: RealNumber
+    minValue: RealNumber
+    maxValue: RealNumber
     step: RealNumber
 
 
 class FileSelectorWidgetConfig(TypedDict, total=False):
-    allowed_extensions: List[str]
+    allowedExtensions: List[str]
     ''' The extensions (without ".") that are allowed to choose. '''
 
-    select_directory: Optional[str]
+    selectDirectory: Optional[str]
     '''
     Whether to select a directory instead of a file.
     Default to false.
@@ -133,7 +134,7 @@ class FileSelectorWidgetConfig(TypedDict, total=False):
     placeholder: Optional[LabelText]
     ''' Custom placeholder text. '''
 
-    select_local_file: Optional[bool]
+    selectLocalFile: Optional[bool]
     ''' If true, selects local system files. '''
 
 
@@ -141,14 +142,14 @@ AudioSourceType = Literal['file', 'audioTrack', 'record']
 
 
 class MultiSourceAudioSelectorWidgetConfig(TypedDict, total=False):
-    allowed_sources: Optional[List[AudioSourceType]]
+    allowedSources: Optional[List[AudioSourceType]]
     ''' Default to allow all audio sources. '''
 
 
 class MultiSourceAudioSelectorResult(TypedDict, total=False):
-    source_type: AudioSourceType
+    sourceType: AudioSourceType
 
-    audio_info: Any
+    audioInfo: Any
     '''
     Result type will be:
     * `File` if `sourceType` is 'file'
@@ -169,6 +170,13 @@ class DescriptionsWidgetConfig(TypedDict, total=False):
     data: List[DescriptionData]
 
 
+class TextAreaWidgetConfig(TypedDict, total=False):
+    placeholder: str
+    maxLength: int
+    allowClear: bool
+    autoSize: bool
+
+
 class WidgetDescriptor(TypedDict, total=False):
     type: int  # WidgetType
     config: Optional[SliderWidgetConfig
@@ -183,4 +191,5 @@ class WidgetDescriptor(TypedDict, total=False):
                      | FileSelectorWidgetConfig
                      | SelectListWidgetConfig
                      | MultiSourceAudioSelectorWidgetConfig
-                     | DescriptionsWidgetConfig]
+                     | DescriptionsWidgetConfig
+                     | TextAreaWidgetConfig]

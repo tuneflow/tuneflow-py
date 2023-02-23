@@ -11,6 +11,15 @@ TEST_AUDIO_CLIP_DATA = {
     "duration": 1,
 }
 
+TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA = {
+    "audio_data": {
+        "data": bytes(),
+        "format": "wav"
+    },
+    "start_tick": 480,
+    "duration": 1,
+}
+
 
 def create_song():
     song = Song()
@@ -80,6 +89,22 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_audio_clip_data().audio_file_path, TEST_AUDIO_CLIP_DATA["audio_file_path"])
         self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA["start_tick"])
         self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA["duration"])
+
+    def test_get_audio_related_fields_with_audio_data(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=480,
+            audio_clip_data=TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA,
+        )
+        self.assertEqual(clip1.get_clip_end_tick(), 1440)
+        self.assertEqual(clip1.get_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_end_tick(), 1440)
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, "")
+        self.assertEqual(clip1.get_audio_clip_data().audio_data.format,
+                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"].format)
+        self.assertEqual(clip1.get_audio_clip_data().audio_data.data,
+                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"].data)
+        self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["start_tick"])
+        self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["duration"])
 
     def test_set_and_get_custom_clip_start_and_end_tick_out_of_audio_range(self):
         clip1 = self.audio_track.create_audio_clip(

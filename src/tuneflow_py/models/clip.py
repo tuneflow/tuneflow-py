@@ -1,18 +1,20 @@
 from __future__ import annotations
+from tuneflow_py.descriptors.clip_descriptor import AudioClipData
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.note import Note
 from tuneflow_py.utils import lower_than, greater_than, greater_equal
 from nanoid import generate as generate_nanoid
-from typing import List, Callable
+from typing import List
 from types import SimpleNamespace
-from sys import maxsize
+
 
 ClipType = song_pb2.ClipType
 
 
 class Clip:
     def __init__(self, song, type: int | None = None, clip_start_tick: int | None = None, id: str | None = None, track=None,
-                 clip_end_tick: int | None = None, audio_clip_data=None, proto: song_pb2.Clip | None = None) -> None:
+                 clip_end_tick: int | None = None, audio_clip_data: AudioClipData | None = None, proto: song_pb2.Clip |
+                 None = None) -> None:
         '''
         A clip is a piece in a track, and it contains notes and the clip range.
         One track can contain one or many non-overlapping clips.
@@ -38,7 +40,11 @@ class Clip:
                 raise Exception(
                     'Audio clip data must be provided for audio clips.')
 
-            self._proto.audio_clip_data.audio_file_path = audio_clip_data["audio_file_path"]
+            if "audio_file_path" in audio_clip_data and audio_clip_data["audio_file_path"] is not None and audio_clip_data["audio_file_path"] != "":
+                self._proto.audio_clip_data.audio_file_path = audio_clip_data["audio_file_path"]
+            if "audio_data" in audio_clip_data and audio_clip_data["audio_data"] is not None:
+                self._proto.audio_clip_data.audio_data.format = audio_clip_data["audio_data"]["format"]
+                self._proto.audio_clip_data.audio_data.data = audio_clip_data["audio_data"]["data"]
             self._proto.audio_clip_data.start_tick = audio_clip_data["start_tick"]
             self._proto.audio_clip_data.duration = audio_clip_data["duration"]
 
@@ -467,9 +473,13 @@ class Clip:
                         clip_start_tick=right_clip_start_tick,
                         clip_end_tick=right_clip_end_tick,
                         audio_clip_data={
-                            "audio_file_path": audio_clip_data.audio_file_path,
+                            "audio_file_path": audio_clip_data.audio_file_path if audio_clip_data.HasField("audio_file_path") else None,
                             "start_tick": audio_clip_data.start_tick,
                             "duration": audio_clip_data.duration,
+                            "audio_data": {
+                                "format": audio_clip_data.audio_data.format,
+                                "data": audio_clip_data.audio_data.data
+                            } if audio_clip_data.HasField("audio_data") else None
                         },
                     )
             return
