@@ -100,9 +100,9 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_audio_end_tick(), 1440)
         self.assertEqual(clip1.get_audio_clip_data().audio_file_path, "")
         self.assertEqual(clip1.get_audio_clip_data().audio_data.format,
-                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"].format)
+                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"]["format"])
         self.assertEqual(clip1.get_audio_clip_data().audio_data.data,
-                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"].data)
+                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"]["data"])
         self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["start_tick"])
         self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["duration"])
 

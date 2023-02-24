@@ -1,5 +1,4 @@
-from typing import TypedDict
-from typing_extensions import Required, NotRequired
+from typing_extensions import Required, NotRequired, TypedDict
 
 
 class AudioData(TypedDict):
