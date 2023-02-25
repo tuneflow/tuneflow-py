@@ -31,7 +31,40 @@ The core idea of TuneFlow's plugin system is that you only care about the data m
 
 ![Plugin Flow](docs/images/pipeline_flow_en.jpg)
 
-A barebone plugin may look like this:
+A python plugin bundle consists of 2 components: The bundle file and the plugin files.
+
+### Bundle file (`bundle.json`)
+
+The bundle file, which we usually name it `bundle.json`, contains the information of the plugins in this bundle. The information here will be shown to the users before they need to load the code of your plugin.
+
+An example manifest file looks like this.
+
+```json
+{
+  "plugins": [
+    ......,
+    {
+      "providerId": "my-provider-id",
+      "providerDisplayName": "My Provider Name",
+      "pluginId": "my-plugin-id",
+      "pluginDisplayName": "My Plugin Name",
+      "version": "1.0.0",
+      "minRequiredDesktopVersion": "1.8.3",
+      "options": {
+        "allowReset": false
+      }
+    },
+    ......
+  ]
+}
+
+```
+
+### Plugin code (`plugin.py`)
+
+Under the plugin's root folder we need to create a `plugin.py` file, which is where we define the plugin code. You can put other source code under the same folder, too. When TuneFlow runs the plugin, it adds the plugin's root folder to the `PYTHONPATH`.
+
+A barebone python plugin may look like this:
 
 ```python
 from tuneflow_py import TuneflowPlugin, Song, ReadAPIs, ParamDescriptor
@@ -47,35 +80,24 @@ class HelloWorld(TuneflowPlugin):
         return "hello-world"
 
     @staticmethod
-    def provider_display_name():
-        return "Andantei"
-
-    @staticmethod
-    def plugin_display_name():
-        return "Hellow World"
-
-    def params(self) -> dict[str, ParamDescriptor]:
+    def params(song: Song, read_apis: ReadAPIs) -> dict[str, ParamDescriptor]:
         return {}
 
-    def init(self, song: Song, read_apis: ReadAPIs):
-        pass
-
-    def run(self, song: Song, params: dict[str, Any], read_apis: ReadAPIs):
+    @staticmethod
+    def run(song: Song, params: dict[str, Any], read_apis: ReadAPIs):
         print("Hello World!")
 
 ```
 
-When writing a plugin, our main focus is in `params`, `init` and `run`.
+> **Note:** All methods here are static methods. This is by design: The entire plugin should be stateless -- the outcome of one plugin execution is only determined by the input and NOT by any internal states of the plugin itself.
+
+When writing a plugin, our main focus is in `params` and `run`.
 
 ### `params`
 
 This is where you specify the input parameters you want from the user or from the DAW. It will be processed by the DAW and generate your plugin's UI widgets.
 
-### `init`
-
-Called by the DAW when the user loads the plugin but before actually running it. The DAW will provide the current song snapshot (`song: Song`) and some read-only APIs (`read_apis: ReadAPIs`), and you will take these params to initialize your plugin.
-
-For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
+You can optionally use `song` and `read_apis` to get some additional information about the project's current snapshot, so that you can customize your params. For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
 
 ### `run`
 

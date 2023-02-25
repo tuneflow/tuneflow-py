@@ -1,8 +1,7 @@
 from tuneflow_py.descriptors.text import LabelText
-from tuneflow_py.descriptors.common import PluginInfo
 from tuneflow_py.descriptors.param import ParamDescriptor
 from tuneflow_py.descriptors.audio_plugin_descriptor import AudioPluginDescriptor
-from typing import Optional, Any, List, Dict
+from typing import Any, List, Dict
 from tuneflow_py.models.song import Song
 
 
@@ -34,9 +33,6 @@ class TuneflowPlugin:
     All plugins should be a sub-class of this plugin in order to run in the pipeline.
     '''
 
-    def __init__(self) -> None:
-        self.params_result_internal = {}
-
     @staticmethod
     def provider_id() -> str:
         """
@@ -58,67 +54,20 @@ class TuneflowPlugin:
         raise Exception("plugin_id must be overwritten.")
 
     @staticmethod
-    def provider_display_name() -> LabelText:
-        '''
-        The display name of the provider.
-        '''
-        raise Exception("provider_display_name must be overwritten.")
-
-    @staticmethod
-    def plugin_display_name() -> LabelText:
-        '''
-        The display name of the plugin.
-        '''
-        raise Exception("plugin_display_name must be overwritten.")
-
-    @staticmethod
-    def plugin_description() -> Optional[LabelText]:
-        '''
-        The description of this plugin.
-        '''
-        return None
-
-    @staticmethod
-    def plugin_info() -> Optional[PluginInfo]:
-        return None
-
-    @staticmethod
-    def allow_reset():
-        '''
-        Whether to allow users to reset all parameters of this plugin.
-        '''
-        return False
-
-    def init(self, song: Song, read_apis: ReadAPIs):
-        '''
-        Initializes the plugin instance.
-
-        Override this method to initialize your plugin before it starts running.
-        '''
-        pass
-
-    def params(self) -> Dict[str, ParamDescriptor]:
+    def params(song: Song, read_apis: ReadAPIs) -> Dict[str, ParamDescriptor]:
         '''
         Specify params to get from user input.
 
         Param input widgets will be displayed on the UI, and the inputs will be collected and fed into @run method.
 
+        You can also optionally use `song` and `read_apis` to adjust your params based on the current snapshot.
+
         If you don't need any param, return `{}`;
         '''
         return {}
 
-    def allow_manual_apply_adjust(self):
-        '''
-        Whether the user can manually apply this plugin and go back to adjust it.
-        Enable this when you want the user to frequently toggle this plugin on and off
-        to see the difference.
-
-        For example: A plugin that divides a track into two, you want the user to
-        easily switch between the plugin is on or off to see what's going on.
-        '''
-        return False
-
-    def run(self, song: Song, params: Dict[str, Any], read_apis: ReadAPIs):
+    @staticmethod
+    def run(song: Song, params: Dict[str, Any], read_apis: ReadAPIs):
         '''
         The main logic here.
 
@@ -133,15 +82,10 @@ class TuneflowPlugin:
     # NO OVERWRITE BELOW
     # =====================================
 
-    @classmethod
-    def create(cls, song: Song, read_apis: ReadAPIs):
-        plugin = cls()
-        plugin.reset_internal()
-        plugin.init(song, read_apis=read_apis)
-        return plugin
-
-    def reset_internal(self):
-        params = self.params()
-        for key in params.keys():
-            param_descriptor = params[key]
-            self.params_result_internal[key] = param_descriptor["defaultValue"]
+    @staticmethod
+    def _get_default_params(param_config):
+        param_result = {}
+        for key in param_config.keys():
+            param_descriptor = param_config[key]
+            param_result[key] = param_descriptor["defaultValue"]
+        return param_result
