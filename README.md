@@ -67,7 +67,7 @@ Under the plugin's root folder we need to create a `plugin.py` file, which is wh
 A barebone python plugin may look like this:
 
 ```python
-from tuneflow_py import TuneflowPlugin, Song, ReadAPIs, ParamDescriptor
+from tuneflow_py import TuneflowPlugin, Song, ParamDescriptor
 
 
 class HelloWorld(TuneflowPlugin):
@@ -80,11 +80,11 @@ class HelloWorld(TuneflowPlugin):
         return "hello-world"
 
     @staticmethod
-    def params(song: Song, read_apis: ReadAPIs) -> dict[str, ParamDescriptor]:
+    def params(song: Song) -> dict[str, ParamDescriptor]:
         return {}
 
     @staticmethod
-    def run(song: Song, params: dict[str, Any], read_apis: ReadAPIs):
+    def run(song: Song, params: dict[str, Any]):
         print("Hello World!")
 
 ```
@@ -97,13 +97,13 @@ When writing a plugin, our main focus is in `params` and `run`.
 
 This is where you specify the input parameters you want from the user or from the DAW. It will be processed by the DAW and generate your plugin's UI widgets.
 
-You can optionally use `song` and `read_apis` to get some additional information about the project's current snapshot, so that you can customize your params. For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
+You can optionally use `song` to get some additional information about the project's current snapshot, so that you can customize your params. For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
 
 ### `run`
 
 Called by the DAW when the user actually runs the plugin by hitting the **Apply`** button.
 
-Here is where you implement your main logic. The method takes in the current song snapshot (`song: Song`), the params that are actually provided by the user or the DAW (`params`), and the read-only APIs (`read_apis: ReadAPIs`).
+Here is where you implement your main logic. The method takes in the current song snapshot (`song: Song`), the params that are actually provided by the user or the DAW (`params`).
 
 ## Run your plugin
 

@@ -1,29 +1,6 @@
-from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.param import ParamDescriptor
-from tuneflow_py.descriptors.audio_plugin_descriptor import AudioPluginDescriptor
-from typing import Any, List, Dict
+from typing import Any, Dict
 from tuneflow_py.models.song import Song
-
-
-class ReadAPIs:
-    '''
-    Read-only APIs used in `init` and `run` methods of a plugin.
-    '''
-
-    def get_system_locale(self):
-        raise Exception("Not implemented")
-
-    def translate_label(self, label_text: LabelText):
-        raise Exception("Not implemented")
-
-    def serialize_song(self, song: Song):
-        raise Exception("Not implemented")
-
-    def deserialize_song(self, encoded_song: str):
-        raise Exception("Not implemented")
-
-    def get_available_audio_plugins(self) -> List[AudioPluginDescriptor]:
-        raise Exception("Not implemented")
 
 
 class TuneflowPlugin:
@@ -54,7 +31,7 @@ class TuneflowPlugin:
         raise Exception("plugin_id must be overwritten.")
 
     @staticmethod
-    def params(song: Song, read_apis: ReadAPIs) -> Dict[str, ParamDescriptor]:
+    def params(song: Song) -> Dict[str, ParamDescriptor]:
         '''
         Specify params to get from user input.
 
@@ -67,14 +44,13 @@ class TuneflowPlugin:
         return {}
 
     @staticmethod
-    def run(song: Song, params: Dict[str, Any], read_apis: ReadAPIs):
+    def run(song: Song, params: Dict[str, Any]):
         '''
         The main logic here.
 
-        Args:
-            `song`: The song that is being processed. You can directly modify the song
+        @param song The song that is being processed. You can directly modify the song
                 by calling its methods.
-            `params`: The results collected from user input specified by the `params` method.
+        @param params The results collected from user input specified by the `params` method.
         '''
         pass
 
