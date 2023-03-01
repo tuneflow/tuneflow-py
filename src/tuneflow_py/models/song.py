@@ -7,7 +7,7 @@ from tuneflow_py.models.tempo import TempoEvent
 from tuneflow_py.models.time_signature import TimeSignatureEvent
 from tuneflow_py.models.automation import AutomationTarget, AutomationTargetType
 from tuneflow_py.models.audio_plugin import AudioPlugin, decode_audio_plugin_tuneflow_id
-from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than
+from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than, lower_equal
 from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, Instrument, Note as ToolkitNote
 from types import SimpleNamespace
 from typing import List
@@ -198,6 +198,27 @@ class Song:
     def get_tempo_event_count(self):
         return len(self._proto.tempos)
 
+    def get_tempo_event_at(self, index: int):
+        if index < 0 or index >= len(self._proto.tempos):
+            return None
+        return TempoEvent(proto=self._proto.tempos[index])
+
+    def get_tempo_event_at_tick(self, tick: int):
+        target_tempo = SimpleNamespace()
+        target_tempo.ticks = tick
+        index = lower_equal(
+            self._proto.tempos,
+            target_tempo,
+            lambda x: x.ticks,
+        )
+        if index < 0:
+            index = 0
+
+        if index >= len(self._proto.tempos):
+            index = len(self._proto.tempos) - 1
+
+        return TempoEvent(proto=self._proto.tempos[index])
+
     def create_tempo_change(self, ticks: int, bpm: float):
         '''
         Adds a tempo change event into the song and returns it.
@@ -229,6 +250,40 @@ class Song:
 
         self.retiming_tempo_events()
         return tempo_change
+
+    def move_tempo(self, tempo_index: int, move_to_tick: int):
+        tempo = self.get_tempo_event_at(tempo_index)
+        if tempo is None:
+            return
+
+        if (tempo_index == 0):
+            # Cannot move the first tempo.
+            return
+
+        prev_tempo = self.get_tempo_event_at(tempo_index - 1)
+        if prev_tempo is None:
+            return
+        if (prev_tempo.get_ticks() == move_to_tick):
+            # Moved to another tempo, delete it.
+            self.remove_tempo_change_at(tempo_index - 1)
+        elif (tempo_index < self.get_tempo_event_count() - 1):
+            next_tempo = self.get_tempo_event_at(tempo_index+1)
+            if (next_tempo is not None and next_tempo.get_ticks() == move_to_tick):
+                # Moved to another tempo, delete it.
+                self.remove_tempo_change_at(tempo_index + 1)
+
+        tempo.set_ticks(move_to_tick)
+        self.retiming_tempo_events()
+
+    def remove_tempo_change_at(self, index: int):
+        if self.get_tempo_event_count() <= 1:
+            raise Exception('Song has to have at least one tempo change. Update the last tempo change instead.')
+
+        if (index == 0):
+            raise Exception('Cannot remove the first tempo.')
+
+        self._proto.tempos.pop(index)
+        self.retiming_tempo_events()
 
     def retiming_tempo_events(self):
         sorted_tempos = sorted(
@@ -318,6 +373,25 @@ class Song:
 
     def get_time_signature_event_at(self, index: int):
         return TimeSignatureEvent(proto=self._proto.time_signatures[index])
+
+    def create_time_signature(self, ticks: int, numerator: int, denominator: int):
+        '''
+        @param ticks The tick at which this event happens.
+        '''
+        time_signature_proto = TimeSignatureEvent(ticks=ticks, numerator=numerator, denominator=denominator)._proto
+        target_time_signature = SimpleNamespace()
+        target_time_signature.ticks = ticks
+        insert_index = greater_equal(
+            self._proto.time_signatures,
+            target_time_signature,
+            lambda x: x.ticks
+        )
+        if (insert_index < 0):
+            self._proto.time_signatures.append(time_signature_proto)
+            return TimeSignatureEvent(proto=self._proto.time_signatures[-1])
+        else:
+            self._proto.time_signatures.insert(insert_index, time_signature_proto)
+            return TimeSignatureEvent(proto=self._proto.time_signatures[insert_index])
 
     def create_audio_plugin(self, tf_id: str):
         pluginInfo = decode_audio_plugin_tuneflow_id(tf_id)

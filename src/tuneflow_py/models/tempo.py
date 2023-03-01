@@ -18,6 +18,9 @@ class TempoEvent:
     def get_ticks(self) -> int:
         return self._proto.ticks
 
+    def set_ticks(self, ticks: int):
+        self._proto.ticks = ticks
+
     def get_bpm(self) -> float:
         return self._proto.bpm
 
