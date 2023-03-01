@@ -3,7 +3,7 @@ from tuneflow_py.descriptors.clip_descriptor import AudioClipData
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.clip import Clip, ClipType
 from tuneflow_py.models.audio_plugin import AudioPlugin
-from tuneflow_py.utils import db_to_volume_value, volume_value_to_db, lower_equal, greater_equal, lower_than
+from tuneflow_py.utils import db_to_volume_value, volume_value_to_db, lower_equal, greater_equal, lower_than, decode_audio_plugin_tuneflow_id
 import nanoid
 from typing import List
 from types import SimpleNamespace
@@ -366,6 +366,16 @@ class Track:
             overlapping_clips.append(self._create_clip_from_proto(proto=current_clip_proto))
 
         return overlapping_clips
+
+    def create_audio_plugin(self, tf_id: str):
+        plugin_info = decode_audio_plugin_tuneflow_id(tf_id)
+        plugin = AudioPlugin(
+            name=plugin_info["name"],
+            manufacturer_name=plugin_info["manufacturer_name"],
+            plugin_format_name=plugin_info["plugin_format_name"],
+            plugin_version=plugin_info["plugin_version"],
+        )
+        return plugin
 
     def _resolve_clip_conflict(self, clip_id: str, start_tick: int, end_tick: int):
         overlapping_clips = self.get_clips_overlapping_with(

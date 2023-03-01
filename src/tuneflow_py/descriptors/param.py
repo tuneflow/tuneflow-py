@@ -1,8 +1,37 @@
+from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.widget import WidgetDescriptor
-from typing import Any, Optional
-from typing_extensions import TypedDict
+from tuneflow_py.descriptors.common import ClipInfo
+from typing import Any, Optional, Literal, List
+from typing_extensions import TypedDict, Required, NotRequired
 from enum import Enum
+
+
+class ClipAudioDataInjectOptions(TypedDict):
+    '''
+    Inject config for when injection source is `InjectSource.ClipAudioData`.
+    '''
+    clips: Required[Literal['selectedAudioClips',] | List[ClipInfo]]
+
+
+class SelectedClipInfosInjectOptions(TypedDict):
+    '''
+    Inject config for when injection source is `InjectSource.SelectedClipInfos`.
+    '''
+
+    maxNumClips: NotRequired[int]
+    '''
+    Maximum number of clip infos to include. Defaults to unlimited.
+    '''
+
+
+class InjectConfig(TypedDict):
+    '''
+    Used to specify a injection source when additional config is needed.
+    '''
+
+    type: Required[int]
+    options: Required[ClipAudioDataInjectOptions | SelectedClipInfosInjectOptions]
 
 
 class InjectSource(Enum):
@@ -23,6 +52,9 @@ class InjectSource(Enum):
 
     TickAtPlayheadSnappedToBeat = 6
     ''' A number that represents the start tick of the beat where the playhead is at. '''
+
+    ClipAudioData = 7
+    ''' A list of `AudioData` for specified clips. '''
 
 
 class ParamDescriptor(TypedDict, total=False):
@@ -59,13 +91,11 @@ class ParamDescriptor(TypedDict, total=False):
     description: Optional[LabelText]
     ''' Explaining what this parameter is for. '''
 
-    injectFrom: InjectSource
+    injectFrom: InjectSource | InjectConfig
     '''
     Injects the value from the editor at the time the plugin runs.
     
-    If specified, the editor will inject the value specified by the `InjectSource`,
-    if you want to overwrite the value provided by the editor,
-    you can use initPluginInstance.
+    If specified, the editor will inject the value specified by the `InjectSource` or `InjectConfig`,
     '''
 
     adjustableWhenPluginIsApplied: Optional[bool]

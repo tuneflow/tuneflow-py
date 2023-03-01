@@ -343,7 +343,7 @@ class Song:
         new_track = Track(
             type=type, song=self, rank=rank if rank is not None else self.get_next_track_rank())
         if assign_default_sampler_plugin and type == TrackType.MIDI_TRACK:
-            new_track.set_sampler_plugin(new_track.create_audio_plugin(AudioPlugin.DEFAULT_SYNTH_TF_ID))
+            new_track.set_sampler_plugin(new_track.create_audio_plugin(AudioPlugin.DEFAULT_SYNTH_TFID))
         if type == TrackType.AUX_TRACK:
             # TODO: Set default input bus rank.
             pass
