@@ -2,8 +2,8 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.widget import WidgetDescriptor
 from tuneflow_py.descriptors.common import ClipInfo
-from typing import Any, Optional, Literal, List
-from typing_extensions import TypedDict, Required, NotRequired
+from typing import Any, Optional, List
+from typing_extensions import TypedDict, Required, NotRequired, Literal
 from enum import Enum
 
 
