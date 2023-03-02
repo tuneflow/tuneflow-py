@@ -1,4 +1,4 @@
-from tuneflow_py.models.song import Song
+from tuneflow_py import Song, TrackType
 from miditoolkit.midi import MidiFile
 from pathlib import PurePath, Path
 import unittest
@@ -116,6 +116,14 @@ class TestImportExportMIDI(unittest.TestCase):
                 self.assertEqual(expected_note.velocity, actual_note.velocity)
                 self.assertEqual(expected_note.pitch, actual_note.pitch)
             # TODO: Test track automation.
+
+
+class TestBasicOperations(BaseTest):
+    def test_get_track_index(self):
+        track = self.song.create_track(type=TrackType.MIDI_TRACK)
+        track2 = self.song.create_track(type=TrackType.MIDI_TRACK)
+        self.assertEqual(self.song.get_track_index(track.get_id()), 0)
+        self.assertEqual(self.song.get_track_index(track2.get_id()), 1)
 
 
 class TestTempo(BaseTest):

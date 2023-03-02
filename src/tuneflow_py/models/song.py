@@ -54,6 +54,16 @@ class Song:
 
     def get_track_at(self, index):
         return Track(song=self, proto=self._proto.tracks[index])
+    
+    def get_track_index(self, track_id: str):
+        '''
+        Get the index of the track within the tracks list.
+        Returns -1 if no track matches the track id.
+        '''
+        for index, track in enumerate(self.get_tracks()):
+            if track.get_id() == track_id:
+                return index
+        return -1
 
     def serialize(self):
         return b64encode(self._proto.SerializeToString()).decode('ascii')

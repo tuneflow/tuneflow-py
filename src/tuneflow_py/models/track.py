@@ -60,6 +60,9 @@ class Track:
         self._proto.rank = rank
         self._proto.pan = pan
         # TODO: Initialize automation data.
+    
+    def get_id(self):
+        return self._proto.uuid
 
     def get_clip_count(self):
         return len(self._proto.clips)
