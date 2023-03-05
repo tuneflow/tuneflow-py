@@ -25,91 +25,47 @@ Check out the SDKs in other languages:
 - **Typescript**: https://www.github.com/tuneflow/tuneflow
 - Other: Contributions welcome!
 
-## Getting started
+## Why `tuneflow-py`?
 
-The core idea of TuneFlow's plugin system is that you only care about the data model, NOT the implementation. A plugin's only goal is to modify the song, and the DAW will get the modified result and apply changes automatically. Below is an illustration:
+The core idea of TuneFlow's plugin system is that you only care about the data model, NOT the implementation. A plugin's only goal is to modify the song, and the DAW will apply the changes automatically.
+
+Unlike traditional DAW plugins where you can only process MIDI/audio signals from one track, this plugin system allows you to access and modify any part of the project, which is perfect for integrating complex algorithms and AI models.
+
+What's more exciting is that this execution model allows remote processing, which means you can write and test your plugin locally and deploy it anywhere you like, and the DAW can run your plugin through simple network requests.
+
+Below is an illustration of the plugin execution flow:
 
 ![Plugin Flow](docs/images/pipeline_flow_en.jpg)
 
-A python plugin bundle consists of 2 components: The bundle file and the plugin files.
+## Getting Started
 
-### Bundle file (`bundle.json`)
-
-The bundle file, which we usually name it `bundle.json`, contains the information of the plugins in this bundle. The information here will be shown to the users before they need to load the code of your plugin.
-
-An example manifest file looks like this.
-
-```json
-{
-  "plugins": [
-    ......,
-    {
-      "providerId": "my-provider-id",
-      "providerDisplayName": "My Provider Name",
-      "pluginId": "my-plugin-id",
-      "pluginDisplayName": "My Plugin Name",
-      "version": "1.0.0",
-      "minRequiredDesktopVersion": "1.8.3",
-      "options": {
-        "allowReset": false
-      }
-    },
-    ......
-  ]
-}
-
-```
-
-### Plugin code (`plugin.py`)
-
-Under the plugin's root folder we need to create a `plugin.py` file, which is where we define the plugin code. You can put other source code under the same folder, too. When TuneFlow runs the plugin, it adds the plugin's root folder to the `PYTHONPATH`.
-
-A barebone python plugin may look like this:
-
-```python
-from tuneflow_py import TuneflowPlugin, Song, ParamDescriptor
-
-
-class HelloWorld(TuneflowPlugin):
-    @staticmethod
-    def provider_id():
-        return "andantei"
-
-    @staticmethod
-    def plugin_id():
-        return "hello-world"
-
-    @staticmethod
-    def params(song: Song) -> dict[str, ParamDescriptor]:
-        return {}
-
-    @staticmethod
-    def run(song: Song, params: dict[str, Any]):
-        print("Hello World!")
-
-```
-
-> **Note:** All methods here are static methods. This is by design: The entire plugin should be stateless -- the outcome of one plugin execution is only determined by the input and NOT by any internal states of the plugin itself.
-
-When writing a plugin, our main focus is in `params` and `run`.
-
-### `params`
-
-This is where you specify the input parameters you want from the user or from the DAW. It will be processed by the DAW and generate your plugin's UI widgets.
-
-You can optionally use `song` to get some additional information about the project's current snapshot, so that you can customize your params. For example, if you have a list of presets that applies to different time signatures, you can use `init` to read the current song's time signature and filter out those options that don't work for the song.
-
-### `run`
-
-Called by the DAW when the user actually runs the plugin by hitting the **Apply`** button.
-
-Here is where you implement your main logic. The method takes in the current song snapshot (`song: Song`), the params that are actually provided by the user or the DAW (`params`).
-
-## Run your plugin
-
-To debug and run your plugin locally, you can use `tuneflow-devkit-py`. For more documentation, visit: https://github.com/tuneflow/tuneflow-devkit-py
+See [Plugin Development 101](./docs/md/develop/getting-started.md) for and intro and links to more developer documents.
 
 ## Examples
+
+### ⌨️ AudioLDM
+
+Generate speech, sound effects, music and more from text prompt.
+
+Repo: https://github.com/tuneflow/AudioLDM
+
+<img src="./docs/images/demos/audioldm_cn.gif" width="500" />
+
+### 🎙️ Singing Transcription
+
+Transcribe a singing vocal from audio to MIDI. Works with background noise or music.
+
+Repo: https://github.com/tuneflow/singing-transcription-plugin
+
+<img src="./docs/images/demos/singing_transcription_icassp2021.gif" width="500" />
+
+### 🥁 Pocket Drum
+
+Generate a drum pattern with the given style and optionally a melody midi.
+
+Repo: To be updated.
+
+<img src="./docs/images/demos/pocket_drum_cn.gif" width="500" />
 
 For a comprehensive of example plugins, check out https://www.github.com/tuneflow/tuneflow-py-demos
 
