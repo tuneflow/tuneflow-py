@@ -61,6 +61,14 @@ Repo: https://github.com/tuneflow/singing-transcription-plugin
 
 <img src="./docs/images/demos/singing_transcription_icassp2021.gif" width="500" />
 
+### ✂️ Demucs
+
+Separate a raw music audio clip into vocal, drums, bass and others.
+
+Repo：https://github.com/tuneflow/tuneflow-plugin-demucs
+
+<img src="./docs/images/demos/demucs_cn.gif" width="500" />
+
 ### 🥁 Pocket Drum
 
 Generate a drum pattern with the given style and optionally a melody midi.

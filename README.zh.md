@@ -63,6 +63,14 @@ TuneFlow 插件系统的核心宗旨是让开发者只需要关注数据模型�
 
 <img src="./docs/images/demos/singing_transcription_icassp2021.gif" width="500" />
 
+### ✂️ 音源分离 Demucs
+
+将一段多轨音乐分成鼓组，人声，贝斯和其他伴奏。
+
+代码库：https://github.com/tuneflow/tuneflow-plugin-demucs
+
+<img src="./docs/images/demos/demucs_cn.gif" width="500" />
+
 ### 🥁 Pocket Drum
 
 根据给定的风格以及旋律生成一段鼓点。
