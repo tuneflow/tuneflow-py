@@ -1,5 +1,7 @@
 # TuneFlow Python SDK
 
+[English](./README.md) | [简体中文](./README.zh.md)
+
 ![TuneFlow Screenshots](docs/images/tuneflow_wall_thin.jpg)
 
 [![Build Status](https://dev.azure.com/zeostudio/tuneflow-public/_apis/build/status/tuneflow.tuneflow-py?branchName=main)](https://dev.azure.com/zeostudio/tuneflow-public/_build/latest?definitionId=32&branchName=main)
@@ -39,7 +41,7 @@ Below is an illustration of the plugin execution flow:
 
 ## Getting Started
 
-See [Plugin Development 101](./docs/md/develop/getting-started.md) for and intro and links to more developer documents.
+Visit [https://help.tuneflow.com/en/developer](https://help.tuneflow.com/en/developer) for developer documentation.
 
 ## Examples
 

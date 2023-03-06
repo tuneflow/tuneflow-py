@@ -1,3 +1,0 @@
-# Deploy Your Plugins
-
-TBD
