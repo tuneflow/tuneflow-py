@@ -21,17 +21,62 @@ AllowedTrackType = Literal['midi', 'audio', 'aux']
 AllowedClipType = Literal['midi', 'audio']
 
 
+class AllowedTrackInstrument(TypedDict):
+    program: NotRequired[int]
+    isDrum: NotRequired[bool]
+
+
 class ContextTrackContentTriggerConfig(TypedDict):
     allowedTrackTypes: NotRequired[List[AllowedTrackType]]
+
+    allowedTrackInstruments: NotRequired[List[AllowedTrackInstrument]]
+    '''
+    When specified, the corresponding track's instrument must match one of the given instruments.
+
+    NOTE: Use with caution since it blocks the plugin from running, and a lot of times you can simply
+    update the tracks's instrument to what you want.
+    '''
+
+    skipAllowedInstrumentCheckOnDesktop: NotRequired[bool]
+    '''
+    If true, allowed instruments flags will be ignored on desktop.
+    '''
 
 
 class ContextTrackControlTriggerConfig(TypedDict):
     allowedTrackTypes: NotRequired[List[AllowedTrackType]]
 
+    allowedTrackInstruments: NotRequired[List[AllowedTrackInstrument]]
+    '''
+    When specified, the corresponding track's instrument must match one of the given instruments.
+
+    NOTE: Use with caution since it blocks the plugin from running, and a lot of times you can simply
+    update the tracks's instrument to what you want.
+    '''
+
+    skipAllowedInstrumentCheckOnDesktop: NotRequired[bool]
+    '''
+    If true, allowed instruments flags will be ignored on desktop.
+    '''
+
 
 class SelectedClipTriggerConfig(TypedDict):
     allowedClipTypes: NotRequired[List[AllowedClipType]]
+
     maxNumClips: NotRequired[int]
+
+    allowedTrackInstruments: NotRequired[List[AllowedTrackInstrument]]
+    '''
+    When specified, the corresponding track's instrument must match one of the given instruments.
+
+    NOTE: Use with caution since it blocks the plugin from running, and a lot of times you can simply
+    update the tracks's instrument to what you want.
+    '''
+
+    skipAllowedInstrumentCheckOnDesktop: NotRequired[bool]
+    '''
+    If true, allowed instruments flags will be ignored on desktop.
+    '''
 
 
 class TuneflowPluginTriggerConfig(TypedDict):
@@ -52,11 +97,6 @@ class TuneflowPluginTriggerData(TypedDict):
     '''
     type: TuneflowPluginTriggerType
     entities: NotRequired[List[EntityId]]
-
-
-class AllowedTrackInstrment(TypedDict):
-    program: NotRequired[int]
-    isDrum: NotRequired[bool]
 
 
 class TuneflowPluginOptions(TypedDict):
