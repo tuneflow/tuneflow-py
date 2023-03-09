@@ -11,7 +11,6 @@ def create_song():
         ticks=1440,
         bpm=60,
     )
-    song.create_time_signature(ticks=0, numerator=4, denominator=4)
     song.create_time_signature(ticks=2880, numerator=7, denominator=8)
     return song
 
@@ -214,6 +213,39 @@ class TestTempo(BaseTest):
         with pytest.raises(Exception) as exception2:
             song.remove_tempo_change_at(0)
         self.assertIsNotNone(exception2)
+
+
+class TestTimeSignature(BaseTest):
+    def test_get_time_signature(self):
+        self.assertEqual(self.song.get_time_signature_event_count(), 2)
+        time_signature1 = self.song.get_time_signature_event_at(0)
+        self.assertEqual(time_signature1.get_ticks(), 0)
+        self.assertEqual(time_signature1.get_numerator(), 4)
+        self.assertEqual(time_signature1.get_denominator(), 4)
+        time_signature2 = self.song.get_time_signature_event_at(1)
+        self.assertEqual(time_signature2.get_ticks(), 2880)
+        self.assertEqual(time_signature2.get_numerator(), 7)
+        self.assertEqual(time_signature2.get_denominator(), 8)
+        time_signature = self.song.get_time_signature_event_at_tick(-1)
+        self.assertEqual(time_signature.get_ticks(), 0)
+        self.assertEqual(time_signature.get_numerator(), 4)
+        self.assertEqual(time_signature.get_denominator(), 4)
+        time_signature = self.song.get_time_signature_event_at_tick(0)
+        self.assertEqual(time_signature.get_ticks(), 0)
+        self.assertEqual(time_signature.get_numerator(), 4)
+        self.assertEqual(time_signature.get_denominator(), 4)
+        time_signature = self.song.get_time_signature_event_at_tick(1440)
+        self.assertEqual(time_signature.get_ticks(), 0)
+        self.assertEqual(time_signature.get_numerator(), 4)
+        self.assertEqual(time_signature.get_denominator(), 4)
+        time_signature = self.song.get_time_signature_event_at_tick(2880)
+        self.assertEqual(time_signature.get_ticks(), 2880)
+        self.assertEqual(time_signature.get_numerator(), 7)
+        self.assertEqual(time_signature.get_denominator(), 8)
+        time_signature = self.song.get_time_signature_event_at_tick(99999)
+        self.assertEqual(time_signature.get_ticks(), 2880)
+        self.assertEqual(time_signature.get_numerator(), 7)
+        self.assertEqual(time_signature.get_denominator(), 8)
 
 
 if __name__ == '__main__':

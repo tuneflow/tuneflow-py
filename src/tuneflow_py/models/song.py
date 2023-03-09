@@ -54,7 +54,7 @@ class Song:
 
     def get_track_at(self, index):
         return Track(song=self, proto=self._proto.tracks[index])
-    
+
     def get_track_index(self, track_id: str):
         '''
         Get the index of the track within the tracks list.
@@ -397,6 +397,22 @@ class Song:
         return len(self._proto.time_signatures)
 
     def get_time_signature_event_at(self, index: int):
+        return TimeSignatureEvent(proto=self._proto.time_signatures[index])
+
+    def get_time_signature_event_at_tick(self, tick: int):
+        target_time_signature = SimpleNamespace()
+        target_time_signature.ticks = tick
+        index = lower_equal(
+            self._proto.time_signatures,
+            target_time_signature,
+            lambda x: x.ticks,
+        )
+        if index < 0:
+            index = 0
+
+        if index >= len(self._proto.time_signatures):
+            index = len(self._proto.time_signatures) - 1
+
         return TimeSignatureEvent(proto=self._proto.time_signatures[index])
 
     def create_time_signature(self, ticks: int, numerator: int, denominator: int):

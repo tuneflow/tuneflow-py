@@ -2,6 +2,7 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.widget import WidgetDescriptor
 from tuneflow_py.descriptors.common import ClipInfo
+from tuneflow_py.descriptors.clip_descriptor import AudioData
 from typing import Any, Optional, List
 from typing_extensions import TypedDict, Required, NotRequired, Literal
 from enum import Enum
@@ -104,3 +105,12 @@ class ParamDescriptor(TypedDict, total=False):
     when the plugin is applied. However, changing the param
     will invalidate all the changes after this plugin.
     '''
+
+
+class ClipAudioDataInjectData(TypedDict):
+    '''
+    Type of the injected data when injection source is `InjectSource.ClipAudioData`.
+    '''
+
+    clipInfo: ClipInfo
+    audioData: AudioData

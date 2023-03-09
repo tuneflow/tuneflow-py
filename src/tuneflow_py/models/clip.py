@@ -199,6 +199,9 @@ class Clip:
             return None
         return self._proto.audio_clip_data
 
+    def clear_notes(self):
+        del self._proto.notes[:]
+
     def delete_from_parent(self, delete_associated_track_automation: bool):
         if self.track is not None:
             self.track.delete_clip(self, delete_associated_track_automation)

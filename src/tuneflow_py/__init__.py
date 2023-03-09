@@ -12,3 +12,6 @@ from tuneflow_py.descriptors.widget import *
 from tuneflow_py.descriptors.text import *
 from tuneflow_py.descriptors.param import *
 from tuneflow_py.descriptors.common import *
+from tuneflow_py.descriptors.audio_plugin_descriptor import *
+from tuneflow_py.descriptors.clip_descriptor import *
+from tuneflow_py.descriptors.plugin import *

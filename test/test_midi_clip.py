@@ -158,6 +158,13 @@ class TestBasicOperations(BaseTestCase):
             ),
         )
 
+    def test_clear_notes(self):
+        track = self.song.get_track_at(0)
+        clip1 = track.get_clip_at(0)
+        self.assertGreater(clip1.get_raw_note_count(), 0)
+        clip1.clear_notes()
+        self.assertEqual(clip1.get_raw_note_count(), 0)
+
 
 class TestCreateClip(BaseTestCase):
     def test_create_clip_returns_correct_reference(self):
