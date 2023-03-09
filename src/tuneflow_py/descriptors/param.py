@@ -107,10 +107,12 @@ class ParamDescriptor(TypedDict, total=False):
     '''
 
 
-class ClipAudioDataInjectData(TypedDict):
-    '''
-    Type of the injected data when injection source is `InjectSource.ClipAudioData`.
-    '''
-
+class ClipAudioDataInjectDataEntry(TypedDict):
     clipInfo: ClipInfo
     audioData: AudioData
+
+
+ClipAudioDataInjectData = List[ClipAudioDataInjectDataEntry]
+'''
+Type of the injected data when injection source is `InjectSource.ClipAudioData`.
+'''
