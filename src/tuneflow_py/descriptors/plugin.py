@@ -117,3 +117,6 @@ class TuneflowPluginOptions(TypedDict):
    
     Defaults to false.
     '''
+
+
+TuneflowPluginCategory = Literal['generate', 'transcribe', 'analyze', 'synthesize', 'import', 'export', 'misc']
