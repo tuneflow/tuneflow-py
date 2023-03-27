@@ -8,7 +8,26 @@ from typing_extensions import TypedDict, Required, NotRequired, Literal
 from enum import Enum
 
 
-class ClipAudioDataInjectOptions(TypedDict):
+class Mp3DataConvertOptions(TypedDict):
+    sampleRate: Optional[int]
+    ''' Sample rate in Hz, default 44100. '''
+
+
+class AudioDataConvertOptions(TypedDict):
+    toFormat: Literal['ogg', 'wav']
+    options: Optional[Mp3DataConvertOptions]
+
+
+class AudioDataInjectOptions(TypedDict):
+    convert: Optional[AudioDataConvertOptions]
+    '''
+    When enabled, only the visible portion of the clip will be converted to the given format.
+   
+    The converted audio data will start from the clip start and end at the clip end.
+    '''
+
+
+class ClipAudioDataInjectOptions(AudioDataInjectOptions):
     '''
     Inject config for when injection source is `InjectSource.ClipAudioData`.
     '''
