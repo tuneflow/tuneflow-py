@@ -204,3 +204,9 @@ def are_tuneflow_ids_equal_ignore_version(tf_id1: str, tf_id2: str):
         if parsed_id1[key] != parsed_id2[key]:
             return False
     return True
+
+def pitch_to_hz(pitch: int):
+  '''
+  @param pitch A number from 0 to 127.
+  '''
+  return 440 * pow(2, (pitch - 69) / 12)
