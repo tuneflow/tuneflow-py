@@ -3,23 +3,23 @@ from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.widget import WidgetDescriptor
 from tuneflow_py.descriptors.common import ClipInfo
 from tuneflow_py.descriptors.clip_descriptor import AudioData
-from typing import Any, Optional, List
+from typing import Any, List
 from typing_extensions import TypedDict, Required, NotRequired, Literal
 from enum import Enum
 
 
 class Mp3DataConvertOptions(TypedDict):
-    sampleRate: Optional[int]
+    sampleRate: NotRequired[int]
     ''' Sample rate in Hz, default 44100. '''
 
 
 class AudioDataConvertOptions(TypedDict):
-    toFormat: Literal['ogg', 'wav']
-    options: Optional[Mp3DataConvertOptions]
+    toFormat: Required[Literal['ogg', 'wav']]
+    options: NotRequired[Mp3DataConvertOptions]
 
 
 class AudioDataInjectOptions(TypedDict):
-    convert: Optional[AudioDataConvertOptions]
+    convert: NotRequired[AudioDataConvertOptions]
     '''
     When enabled, only the visible portion of the clip will be converted to the given format.
    
@@ -85,16 +85,20 @@ class ParamDescriptor(TypedDict, total=False):
     consistent with the typescript plugins.
     '''
 
-    displayName: LabelText
+    displayName: Required[LabelText]
     ''' The name to display on the UI. '''
 
-    widget: WidgetDescriptor
-    ''' Configuration of the widget to display on the UI. '''
+    widget: Required[WidgetDescriptor]
+    '''
+    Configuration of the widget to display on the UI.
 
-    defaultValue: Any
+    Use  `{ "type": WidgetType.NoWidget.value }` if you don't need a widget.
+    '''
+
+    defaultValue: NotRequired[Any]
     ''' The default value of the param. '''
 
-    adjustable: Optional[bool]
+    adjustable: NotRequired[bool]
     '''
     Whether this param is adjustable. If the param is not adjustable, the controllable
     part is not shown.
@@ -102,33 +106,35 @@ class ParamDescriptor(TypedDict, total=False):
     Defaults to true.
     '''
 
-    hidden: Optional[bool]
-    ''' Whether this param is hidden completely. '''
+    hidden: NotRequired[bool]
+    ''' Whether this param is hidden completely. Defaults to false. '''
 
-    optional: Optional[bool]
-    ''' Whether this param can be left None. '''
+    optional: NotRequired[bool]
+    ''' Whether this param can be left None. Defaults to false. '''
 
-    description: Optional[LabelText]
+    description: NotRequired[LabelText]
     ''' Explaining what this parameter is for. '''
 
-    injectFrom: InjectSource | InjectConfig
+    injectFrom: NotRequired[InjectSource | InjectConfig]
     '''
     Injects the value from the editor at the time the plugin runs.
     
     If specified, the editor will inject the value specified by the `InjectSource` or `InjectConfig`,
     '''
 
-    adjustableWhenPluginIsApplied: Optional[bool]
+    adjustableWhenPluginIsApplied: NotRequired[bool]
     '''
     If set to true, this param can still be adjusted
     when the plugin is applied. However, changing the param
     will invalidate all the changes after this plugin.
+
+    Defaults to false.
     '''
 
 
 class ClipAudioDataInjectDataEntry(TypedDict):
-    clipInfo: ClipInfo
-    audioData: AudioData
+    clipInfo: Required[ClipInfo]
+    audioData: Required[AudioData]
 
 
 ClipAudioDataInjectData = List[ClipAudioDataInjectDataEntry]
