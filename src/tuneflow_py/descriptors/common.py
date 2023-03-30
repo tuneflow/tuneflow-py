@@ -5,8 +5,8 @@ RealNumber = Union[int, float]
 
 
 class ClipInfo(TypedDict):
-    track_id: str
-    clip_id: str
+    track_id: Required[str]
+    clip_id: Required[str]
 
 
 class EntityId(TypedDict):

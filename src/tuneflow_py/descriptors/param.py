@@ -77,7 +77,7 @@ class InjectSource(Enum):
     ''' A list of `AudioData` for specified clips. '''
 
 
-class ParamDescriptor(TypedDict, total=False):
+class ParamDescriptor(TypedDict):
     '''
     Definition of the config for a single param.
 

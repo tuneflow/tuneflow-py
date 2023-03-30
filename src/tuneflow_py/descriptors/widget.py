@@ -2,8 +2,8 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum
-from typing import Optional, Any, List
-from typing_extensions import Literal, TypedDict
+from typing import Any, List
+from typing_extensions import Literal, TypedDict, Required, NotRequired
 from tuneflow_py.models.track import TrackType
 
 
@@ -31,83 +31,83 @@ class WidgetType(Enum):
     TextArea = 17
 
 
-class SliderWidgetConfig(TypedDict, total=False):
-    minValue: RealNumber
-    maxValue: RealNumber
-    step: RealNumber
-    unit: Optional[str]
+class SliderWidgetConfig(TypedDict):
+    minValue: Required[RealNumber]
+    maxValue: Required[RealNumber]
+    step: Required[RealNumber]
+    unit: NotRequired[str]
 
 
-class InputWidgetConfig(TypedDict, total=False):
-    minValue: RealNumber
-    maxValue: RealNumber
-    step: RealNumber
+class InputWidgetConfig(TypedDict):
+    minValue: Required[RealNumber]
+    maxValue: Required[RealNumber]
+    step: Required[RealNumber]
 
 
-class TrackSelectorWidgetConfig(TypedDict, total=False):
-    alwaysShowTrackInfo: Optional[bool]
+class TrackSelectorWidgetConfig(TypedDict):
+    alwaysShowTrackInfo: NotRequired[bool]
     '''  Whether to always show the track info. Default to false. '''
 
-    allowedTrackTypes: Optional[List[TrackType]]  # type: ignore
+    allowedTrackTypes: NotRequired[List[TrackType]]  # type: ignore
     ''' If specified, only the allowed types of tracks can be selected. '''
 
 
-class PitchWidgetConfig(TypedDict, total=False):
-    minAllowedPitch: Optional[RealNumber]
-    maxAllowedPitch: Optional[RealNumber]
+class PitchWidgetConfig(TypedDict):
+    minAllowedPitch: NotRequired[RealNumber]
+    maxAllowedPitch: NotRequired[RealNumber]
 
 
-class TrackPitchSelectorWidgetConfig(TypedDict, total=False):
-    trackSelectorConfig: TrackSelectorWidgetConfig
-    pitchSelectorConfig: PitchWidgetConfig
+class TrackPitchSelectorWidgetConfig(TypedDict):
+    trackSelectorConfig: Required[TrackSelectorWidgetConfig]
+    pitchSelectorConfig: Required[PitchWidgetConfig]
 
 
-class InstrumentSelectorWidgetConfig(TypedDict, total=False):
-    disabledPrograms: Optional[List[RealNumber]]
+class InstrumentSelectorWidgetConfig(TypedDict):
+    disabledPrograms: NotRequired[List[RealNumber]]
     ''' Not supported yet. '''
 
 
-class SelectWidgetOption(TypedDict, total=False):
-    label: LabelText
-    value: Any
+class SelectWidgetOption(TypedDict):
+    label: Required[LabelText]
+    value: Required[Any]
 
 
-class SelectWidgetConfig(TypedDict, total=False):
-    options: List[SelectWidgetOption]
+class SelectWidgetConfig(TypedDict):
+    options: Required[List[SelectWidgetOption]]
 
-    allowSearch: Optional[bool]
+    allowSearch: NotRequired[bool]
     ''' Whether to show search box. Default to false. '''
 
-    placeholder: LabelText
+    placeholder: Required[LabelText]
 
-    virtualListProps: Optional[Any]
+    virtualListProps: NotRequired[Any]
     ''' https://arco.design/vue/component/select#virtual-list '''
 
-    populateOptionsWithGeneratableStyles: Optional[bool]
+    populateOptionsWithGeneratableStyles: NotRequired[bool]
     '''
     Whether to populate the options with the styles that
     TuneFlow can generate.
     '''
 
-    populateOptionsWithGeneratableTempos: Optional[bool]
+    populateOptionsWithGeneratableTempos: NotRequired[bool]
     '''
     Whether to populate the options with the tempo settings that
     TuneFlow can generate with.
     '''
 
 
-class SelectListWidgetConfig(TypedDict, total=False):
-    options: List[SelectWidgetOption]
-    maxHeight: Optional[RealNumber]
-    size: Optional[str]
-    virtualListProps: Optional[Any]
+class SelectListWidgetConfig(TypedDict):
+    options: Required[List[SelectWidgetOption]]
+    maxHeight: NotRequired[RealNumber]
+    size: NotRequired[str]
+    virtualListProps: NotRequired[Any]
     ''' https://arco.design/vue/component/list '''
 
-    allowSearch: Optional[bool]
+    allowSearch: NotRequired[bool]
 
 
-class SwitchWidgetConfig(TypedDict, total=False):
-    type: Optional[Literal['circle', 'round', 'line']]
+class SwitchWidgetConfig(TypedDict):
+    type: NotRequired[Literal['circle', 'round', 'line']]
     '''
     'circle' | 'round' | 'line'
     
@@ -115,41 +115,41 @@ class SwitchWidgetConfig(TypedDict, total=False):
     '''
 
 
-class InputNumberWidgetConfig(TypedDict, total=False):
-    minValue: RealNumber
-    maxValue: RealNumber
-    step: RealNumber
+class InputNumberWidgetConfig(TypedDict):
+    minValue: Required[RealNumber]
+    maxValue: Required[RealNumber]
+    step: Required[RealNumber]
 
 
-class FileSelectorWidgetConfig(TypedDict, total=False):
-    allowedExtensions: List[str]
+class FileSelectorWidgetConfig(TypedDict):
+    allowedExtensions: Required[List[str]]
     ''' The extensions (without ".") that are allowed to choose. '''
 
-    selectDirectory: Optional[str]
+    selectDirectory: NotRequired[str]
     '''
     Whether to select a directory instead of a file.
     Default to false.
     '''
 
-    placeholder: Optional[LabelText]
+    placeholder: NotRequired[LabelText]
     ''' Custom placeholder text. '''
 
-    selectLocalFile: Optional[bool]
+    selectLocalFile: NotRequired[bool]
     ''' If true, selects local system files. '''
 
 
 AudioSourceType = Literal['file', 'audioTrack', 'record']
 
 
-class MultiSourceAudioSelectorWidgetConfig(TypedDict, total=False):
-    allowedSources: Optional[List[AudioSourceType]]
+class MultiSourceAudioSelectorWidgetConfig(TypedDict):
+    allowedSources: NotRequired[List[AudioSourceType]]
     ''' Default to allow all audio sources. '''
 
 
-class MultiSourceAudioSelectorResult(TypedDict, total=False):
-    sourceType: AudioSourceType
+class MultiSourceAudioSelectorResult(TypedDict):
+    sourceType: Required[AudioSourceType]
 
-    audioInfo: Any
+    audioInfo: Required[Any]
     '''
     Result type will be:
     * `File` if `sourceType` is 'file'
@@ -158,28 +158,28 @@ class MultiSourceAudioSelectorResult(TypedDict, total=False):
     '''
 
 
-class DescriptionData(TypedDict, total=False):
-    label: LabelText
-    value: str
-    span: RealNumber
+class DescriptionData(TypedDict):
+    label: Required[LabelText]
+    value: Required[str]
+    span: NotRequired[RealNumber]
 
 
-class DescriptionsWidgetConfig(TypedDict, total=False):
-    size: Literal['mini', 'small', 'medium', 'large']
-    column: int
-    data: List[DescriptionData]
+class DescriptionsWidgetConfig(TypedDict):
+    size: Required[Literal['mini', 'small', 'medium', 'large']]
+    column: Required[int]
+    data: Required[List[DescriptionData]]
 
 
-class TextAreaWidgetConfig(TypedDict, total=False):
-    placeholder: str
-    maxLength: int
-    allowClear: bool
-    autoSize: bool
+class TextAreaWidgetConfig(TypedDict):
+    placeholder: NotRequired[str]
+    maxLength: NotRequired[int]
+    allowClear: NotRequired[bool]
+    autoSize: NotRequired[bool]
 
 
-class WidgetDescriptor(TypedDict, total=False):
-    type: int  # WidgetType
-    config: Optional[SliderWidgetConfig
+class WidgetDescriptor(TypedDict):
+    type: Required[int]  # WidgetType
+    config: NotRequired[SliderWidgetConfig
                      | InputWidgetConfig
                      | SelectWidgetConfig
                      | TrackSelectorWidgetConfig
