@@ -180,16 +180,16 @@ class TextAreaWidgetConfig(TypedDict):
 class WidgetDescriptor(TypedDict):
     type: Required[int]  # WidgetType
     config: NotRequired[SliderWidgetConfig
-                     | InputWidgetConfig
-                     | SelectWidgetConfig
-                     | TrackSelectorWidgetConfig
-                     | PitchWidgetConfig
-                     | TrackPitchSelectorWidgetConfig
-                     | InstrumentSelectorWidgetConfig
-                     | SwitchWidgetConfig
-                     | InputNumberWidgetConfig
-                     | FileSelectorWidgetConfig
-                     | SelectListWidgetConfig
-                     | MultiSourceAudioSelectorWidgetConfig
-                     | DescriptionsWidgetConfig
-                     | TextAreaWidgetConfig]
+                        | InputWidgetConfig
+                        | SelectWidgetConfig
+                        | TrackSelectorWidgetConfig
+                        | PitchWidgetConfig
+                        | TrackPitchSelectorWidgetConfig
+                        | InstrumentSelectorWidgetConfig
+                        | SwitchWidgetConfig
+                        | InputNumberWidgetConfig
+                        | FileSelectorWidgetConfig
+                        | SelectListWidgetConfig
+                        | MultiSourceAudioSelectorWidgetConfig
+                        | DescriptionsWidgetConfig
+                        | TextAreaWidgetConfig]
