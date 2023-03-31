@@ -1,9 +1,6 @@
 from tuneflow_py.models.song import Song, TrackType
 from tuneflow_py.models.audio_plugin import AudioPlugin
 from tuneflow_py.utils import db_to_volume_value
-from miditoolkit.midi import MidiFile
-from pathlib import PurePath, Path
-from io import BytesIO
 import unittest
 
 
@@ -68,6 +65,19 @@ class TestMIDITracks(unittest.TestCase):
     def test_clone_midi_track(self):
         # TODO: Test
         pass
+
+
+class TestCloneClip(unittest.TestCase):
+    def test_clone_clip(self):
+        song = create_song()
+        track = song.create_track(type=TrackType.MIDI_TRACK)
+        clip1 = track.create_midi_clip(clip_start_tick=10, clip_end_tick=20, insert_clip=True)
+        clip1.create_note(pitch=72, velocity=100, start_tick=15, end_tick=16)
+        clip2 = track.clone_clip(clip1)
+        self.assertNotEqual(clip1.get_id(), clip2.get_id())
+        self.assertEqual(clip2.get_clip_start_tick(), clip1.get_clip_start_tick())
+        self.assertEqual(clip2.get_clip_end_tick(), clip1.get_clip_end_tick())
+        self.assertEqual(clip2.get_raw_note_at(0).get_pitch(), 72)
 
 
 if __name__ == '__main__':

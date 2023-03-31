@@ -384,6 +384,18 @@ class Track:
     def get_automation(self):
         return AutomationData(self._proto.automation)
 
+    def clone_clip(self, clip: Clip):
+        '''
+        Clones a clip without inserting it into this track, and returns the cloned instance.
+
+        @param clip The clip (not necessarily in this track) to clone.
+        @returns The cloned clip.
+        '''
+        new_clip_proto = song_pb2.Clip()
+        new_clip_proto.CopyFrom(clip._proto)
+        new_clip_proto.id = Clip._generate_clip_id()
+        return Clip(proto=new_clip_proto, song=self.song)
+
     def _resolve_clip_conflict(self, clip_id: str, start_tick: int, end_tick: int):
         overlapping_clips = self.get_clips_overlapping_with(
             start_tick, end_tick)
