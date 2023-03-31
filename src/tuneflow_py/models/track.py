@@ -10,7 +10,26 @@ from typing import List
 from types import SimpleNamespace
 
 TrackType = song_pb2.TrackType
+TrackOutputType = song_pb2.TrackOutput.TrackOutputType
 
+class TrackOutput:
+    def __init__(self, proto: song_pb2.TrackOutput | None  =None) -> None:
+        if not proto:
+            self._proto = song_pb2.TrackOutput()
+        else:
+            self._proto = proto
+    
+    def get_type(self):
+        return self._proto.type
+    
+    def set_type(self, type: int):
+        self._proto.type = type
+
+    def get_track_id(self):
+        return self._proto.track_id
+
+    def set_track_id(self, track_id: str):
+        self._proto.track_id = track_id
 
 class Track:
     def __init__(self, type: int | None = None,
@@ -395,6 +414,20 @@ class Track:
         new_clip_proto.CopyFrom(clip._proto)
         new_clip_proto.id = Clip._generate_clip_id()
         return Clip(proto=new_clip_proto, song=self.song)
+
+    def has_output(self):
+        return self._proto.HasField('output')
+    
+    def get_output(self):
+        if not self.has_output():
+            return None
+        return TrackOutput(proto=self._proto.output)
+
+    def get_or_create_output(self):
+        return TrackOutput(proto=self._proto.output)
+    
+    def remove_output(self):
+        self._proto.ClearField('output')
 
     def _resolve_clip_conflict(self, clip_id: str, start_tick: int, end_tick: int):
         overlapping_clips = self.get_clips_overlapping_with(

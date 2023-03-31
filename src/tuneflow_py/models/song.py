@@ -1,7 +1,7 @@
 from __future__ import annotations
 from base64 import b64encode, b64decode
 from tuneflow_py.models.protos import song_pb2
-from tuneflow_py.models.track import Track, TrackType
+from tuneflow_py.models.track import Track, TrackType, TrackOutputType
 from tuneflow_py.models.clip import Clip, ClipType
 from tuneflow_py.models.tempo import TempoEvent
 from tuneflow_py.models.time_signature import TimeSignatureEvent
@@ -64,6 +64,24 @@ class Song:
             if track.get_id() == track_id:
                 return index
         return -1
+
+    def remove_track(self, track_id: str):
+        '''
+        Removes a track from the song and returns it.
+        '''
+        track = self.get_track_by_id(track_id=track_id)
+        if not track:
+            return None
+
+        for i in range(self.get_track_count()-1, -1, -1):
+            if self.get_track_at(i).get_id() == track_id:
+                del self._proto.tracks[i]
+        # Delete dependencies.
+        for dep_track in self.get_tracks():
+            track_output = dep_track.get_output()
+            if track_output is not None and track_output.get_type() == TrackOutputType.TRACK_OUTPUT_TRACK and track_output.get_track_id() == track_id:
+                dep_track.remove_output()
+        return track
 
     def serialize(self):
         return b64encode(self._proto.SerializeToString()).decode('ascii')
@@ -483,7 +501,7 @@ class Song:
         new_proto.uuid = Track._generate_track_id()
         self._proto.tracks.insert(self.get_track_index(track.get_id()), new_proto)
         return self.get_track_by_id(new_proto.uuid)
-    
+
     def __repr__(self) -> str:
         return str(self._proto)
 
