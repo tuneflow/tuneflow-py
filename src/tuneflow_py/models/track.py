@@ -3,6 +3,7 @@ from tuneflow_py.descriptors.clip_descriptor import AudioClipData
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.clip import Clip, ClipType
 from tuneflow_py.models.audio_plugin import AudioPlugin
+from tuneflow_py.models.automation import AutomationData
 from tuneflow_py.utils import db_to_volume_value, volume_value_to_db, lower_equal, greater_equal, lower_than, decode_audio_plugin_tuneflow_id
 import nanoid
 from typing import List
@@ -59,8 +60,7 @@ class Track:
         self._proto.muted = muted
         self._proto.rank = rank
         self._proto.pan = pan
-        # TODO: Initialize automation data.
-    
+
     def get_id(self):
         return self._proto.uuid
 
@@ -173,20 +173,20 @@ class Track:
         '''
         if (self.get_type() != TrackType.MIDI_TRACK):
             return
-        plugin_type_changed = (
-            self.has_sampler_plugin() == False and plugin is not None) or (
-            plugin is None and self.has_sampler_plugin()) or (
-            plugin is not None and self.has_sampler_plugin() and not plugin.matches_tf_id(
-                self.get_sampler_plugin().get_tuneflow_id()))  # type:ignore
+
         old_plugin = self.get_sampler_plugin()
         if plugin is not None:
             self._proto.sampler_plugin.MergeFrom(plugin._proto)
         else:
             self._proto.ClearField("sampler_plugin")
-        if (plugin_type_changed and old_plugin is not None and clear_automation):
-            # TODO: Remove automation of plugin
-            pass
-            # self.automation.remove_automation_of_plugin(old_plugin.get_instance_id())
+        if clear_automation:
+            plugin_type_changed = (
+                self.has_sampler_plugin() == False and plugin is not None) or (
+                plugin is None and self.has_sampler_plugin()) or (
+                plugin is not None and self.has_sampler_plugin() and not plugin.matches_tf_id(
+                    self.get_sampler_plugin().get_tuneflow_id()))  # type:ignore
+            if (plugin_type_changed and old_plugin is not None):
+                self.get_automation().remove_automation_of_plugin(old_plugin.get_instance_id())
 
     def get_audio_plugin_count(self):
         return len(self._proto.audio_plugin)
@@ -341,8 +341,9 @@ class Track:
             if index < 0 or index >= len(self._proto.clips):
                 return
 
-            # TODO: Remove automation points within range
-            # self.get_automation().remove_all_points_within_range(clip.get_clip_start_tick(), clip.get_clip_end_tick())
+            # Remove automation points within range
+            clip = self.get_clip_at(index)
+            self.get_automation().remove_all_points_within_range(clip.get_clip_start_tick(), clip.get_clip_end_tick())
 
         self._proto.clips.pop(index)
 
@@ -379,6 +380,9 @@ class Track:
             plugin_version=plugin_info["plugin_version"],
         )
         return plugin
+
+    def get_automation(self):
+        return AutomationData(self._proto.automation)
 
     def _resolve_clip_conflict(self, clip_id: str, start_tick: int, end_tick: int):
         overlapping_clips = self.get_clips_overlapping_with(

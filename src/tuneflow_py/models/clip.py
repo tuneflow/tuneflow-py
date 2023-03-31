@@ -29,6 +29,7 @@ class Clip:
         '''
         self.song = song
         self.track = track
+        self._next_note_id = None
         if proto is not None:
             self._proto = proto
             return
@@ -331,14 +332,12 @@ class Clip:
 
             # Move track automation points if required.
             if (move_associated_track_automation_points):
-                # TODO: Move automation points within range
-                pass
-                # self.track.getAutomation().moveAllPointsWithinRange(
-                #     originalStartTick,
-                #     originalEndTick,
-                #     offsetTick,
-                #     /* offsetValue= */ 0,
-                # )
+                self.track.get_automation().move_all_points_within_range(
+                    original_start_tick,
+                    original_end_tick,
+                    offset_tick,
+                    offset_value=0,
+                )
 
     def move_clip_to(self, tick: int, move_associated_track_automation_points: bool):
         '''
@@ -506,12 +505,19 @@ class Clip:
                                   1, resolve_conflict=False)
 
     def _get_next_note_id(self):
-        '''
-        TODO: Optimize performance
-        '''
-        if len(self._proto.notes) == 0:
-            return 1
-        return max([note_proto.id for note_proto in self._proto.notes]) + 1
+        if self._next_note_id is None:
+            if len(self._proto.notes) == 0:
+                self._next_note_id = 1
+            else:
+                self._next_note_id = max([note_proto.id for note_proto in self._proto.notes]) + 1
+
+        note_id = self._next_note_id
+        if (self._next_note_id >= 2147483647):
+            self._next_note_id = 1
+        else:
+            self._next_note_id += 1
+
+        return note_id
 
     def _ordered_insert_note(self, new_note: Note):
         if (self.get_type() != ClipType.MIDI_CLIP):

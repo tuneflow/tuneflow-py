@@ -247,6 +247,22 @@ class TestTimeSignature(BaseTest):
         self.assertEqual(time_signature.get_numerator(), 7)
         self.assertEqual(time_signature.get_denominator(), 8)
 
+class TestCloneTrack(BaseTest):
+    def test_clone_track(self):
+        track1 = self.song.create_track(type=TrackType.MIDI_TRACK, index=0,rank=1)
+        self.assertEqual(self.song.get_track_count(), 1)
+        track1.set_instrument(program=64, is_drum=False)
+        track1.set_pan(62)
+        track2 = self.song.clone_track(track1)
+        self.assertEqual(self.song.get_track_count(), 2)
+        self.assertNotEqual(track1.get_id(), track2.get_id())
+        self.assertEqual(self.song.get_track_index(track1.get_id()), 1)
+        self.assertEqual(self.song.get_track_index(track2.get_id()), 0)
+        self.assertEqual(track1.get_rank(), 1)
+        self.assertEqual(track2.get_rank(), 2)
+        self.assertEqual(track2.get_instrument().program, 64) # type:ignore
+        self.assertEqual(track2.get_instrument().is_drum, False) # type:ignore
+        self.assertEqual(track2.get_pan(), 62)
 
 if __name__ == '__main__':
     unittest.main()

@@ -473,6 +473,17 @@ class Song:
     def get_next_track_rank(self):
         return 1 if len(self._proto.tracks) == 0 else max([track.rank for track in self._proto.tracks]) + 1
 
+    def clone_track(self, track: Track) -> Track:
+        '''
+        Clones a track and inserts it in this song and returns the cloned instance.
+        '''
+        new_proto = song_pb2.Track()
+        new_proto.CopyFrom(track._proto)
+        new_proto.rank = self.get_next_track_rank()
+        new_proto.uuid = Track._generate_track_id()
+        self._proto.tracks.insert(self.get_track_index(track.get_id()), new_proto)
+        return self.get_track_by_id(new_proto.uuid)
+    
     def __repr__(self) -> str:
         return str(self._proto)
 
