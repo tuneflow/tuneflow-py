@@ -233,6 +233,7 @@ class Song:
                             pitch=note_proto.pitch, velocity=note_proto.velocity,
                             start=note_proto.start_tick, end=note_proto.end_tick))
             # TODO: Export automation
+        midi_obj.max_tick = self.get_last_tick()
         return midi_obj
 
     def get_resolution(self):
