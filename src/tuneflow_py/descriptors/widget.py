@@ -2,7 +2,7 @@ from __future__ import annotations
 from tuneflow_py.descriptors.text import LabelText
 from tuneflow_py.descriptors.common import RealNumber
 from enum import Enum
-from typing import Any, List
+from typing import Any, List, Dict
 from typing_extensions import Literal, TypedDict, Required, NotRequired
 from tuneflow_py.models.track import TrackType
 
@@ -31,11 +31,15 @@ class WidgetType(Enum):
     TextArea = 17
 
 
+SliderMarkerConfig = Dict[RealNumber, LabelText]
+
+
 class SliderWidgetConfig(TypedDict):
     minValue: Required[RealNumber]
     maxValue: Required[RealNumber]
     step: Required[RealNumber]
     unit: NotRequired[str]
+    markers: NotRequired[SliderMarkerConfig]
 
 
 class InputWidgetConfig(TypedDict):
