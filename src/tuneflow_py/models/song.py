@@ -2,6 +2,7 @@ from __future__ import annotations
 from base64 import b64encode, b64decode
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.track import Track, TrackType, TrackOutputType
+from tuneflow_py.models.marker import StructureMarker, StructureType
 from tuneflow_py.models.clip import Clip, ClipType
 from tuneflow_py.models.tempo import TempoEvent
 from tuneflow_py.models.time_signature import TimeSignatureEvent
@@ -82,6 +83,95 @@ class Song:
             if track_output is not None and track_output.get_type() == TrackOutputType.TRACK_OUTPUT_TRACK and track_output.get_track_id() == track_id:
                 dep_track.remove_output()
         return track
+
+    def get_structures(self):
+        return self._proto.structures
+
+    def get_structure_at_index(self, index: int):
+        return self._proto.structures[index]
+
+    def get_structure_at_tick(self, tick: int):
+        def tickToStructureFn(tick):
+            return StructureMarker(song=self,tick=tick, type=StructureType.UNKNOWN)._proto
+
+        def structureToTickFn(structure):
+            return structure.tick
+
+        index = Song.get_structure_at_tick_impl(
+            tick, self._proto.structures, tickToStructureFn, structureToTickFn
+        )
+
+        if index < 0:
+            index = 0
+
+        if index >= len(self._proto.structures):
+            index = len(self._proto.structures) - 1
+
+        return self._proto.structures[index]
+
+    @staticmethod
+    def get_structure_at_tick_impl(
+            tick: int,
+            structures: List,
+            tickToStructureFn,
+            structureToTickFn,
+    ):
+        index = lower_equal(
+            structures,
+            tickToStructureFn(tick),
+            key=lambda s: structureToTickFn(s),
+        )
+
+        if index < 0:
+            index = 0
+
+        if index >= len(structures):
+            index = len(structures) - 1
+
+        return index
+
+    def create_structure(self, tick: int, type: StructureType):
+        structure = StructureMarker(song=self,tick=tick,type=type)
+        if len(self._proto.structures) == 1:
+            # If there is only 1 structure, move it to the start.
+            structure.set_tick(0)
+        self._proto.structures.append(structure._proto)
+        self._proto.structures.sort(key=lambda x: x.tick)
+
+    def move_structure(self, structureIndex: int, moveToTick: int):
+        structure = self.get_structures()[structureIndex]
+        if not structure:
+            return
+        if structureIndex <= 0:
+            return
+        prevStructure = self.get_structures()[structureIndex - 1]
+        if prevStructure.tick == moveToTick:
+            # Moved to another structure, delete it.
+            self.remove_structure(structureIndex - 1)
+        elif structureIndex < len(self.get_structures()) - 1:
+            nextStructure = self.get_structures()[structureIndex + 1]
+            if nextStructure and nextStructure.tick == moveToTick:
+                # Moved to another time signature, delete it.
+                self.remove_structure(structureIndex + 1)
+        structure.tick = moveToTick
+        self._proto.structures.sort(key=lambda x: x.tick)
+
+    def update_structure_at_tick(self, tick: int, type: StructureType):
+        existinStructure = self.get_structure_at_tick(tick)
+        if existinStructure:
+            existinStructure.type = type
+        else:
+            self.create_structure(tick, type)
+
+    def remove_structure(self, index: int):
+        if index < 0 or index >= len(self._proto.structures):
+            return
+        self.get_structures().pop(index)
+        if len(self._proto.structures) > 0 and self._proto.structures[0].tick > 0:
+            # If the first structure of the remaining ones does not start
+            # from 0, move it to 0.
+            self._proto.structures[0].tick = 0
+        self._proto.structures.sort(key=lambda x: x.tick)
 
     def serialize(self):
         return b64encode(self._proto.SerializeToString()).decode('ascii')

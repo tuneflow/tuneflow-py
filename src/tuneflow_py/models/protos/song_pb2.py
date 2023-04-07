@@ -244,7 +244,7 @@ _STRUCTUREMARKER_STRUCTURETYPE = _descriptor.EnumDescriptor(
   serialized_end=2705,
 )
 _sym_db.RegisterEnumDescriptor(_STRUCTUREMARKER_STRUCTURETYPE)
-
+StructureType = enum_type_wrapper.EnumTypeWrapper(_STRUCTUREMARKER_STRUCTURETYPE)
 
 _NOTE = _descriptor.Descriptor(
   name='Note',
@@ -1477,6 +1477,7 @@ DESCRIPTOR.message_types_by_name['Bus'] = _BUS
 DESCRIPTOR.message_types_by_name['Song'] = _SONG
 DESCRIPTOR.enum_types_by_name['TrackType'] = _TRACKTYPE
 DESCRIPTOR.enum_types_by_name['ClipType'] = _CLIPTYPE
+DESCRIPTOR.enum_types_by_name['StructureType'] = _STRUCTUREMARKER_STRUCTURETYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Note = _reflection.GeneratedProtocolMessageType('Note', (_message.Message,), {
