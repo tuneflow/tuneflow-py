@@ -1,3 +1,4 @@
+from __future__ import annotations
 from tuneflow_py.models.protos import song_pb2
 
 StructureType = song_pb2.StructureType
