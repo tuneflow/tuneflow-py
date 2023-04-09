@@ -1,7 +1,8 @@
 from __future__ import annotations
 from tuneflow_py.models.protos import song_pb2
 
-StructureType = song_pb2.StructureType
+StructureType = song_pb2.StructureMarker.StructureType
+
 
 class StructureMarker:
     def __init__(self, song, tick:int=None, type: int | None = None,

@@ -9,7 +9,8 @@ from tuneflow_py.models.time_signature import TimeSignatureEvent
 from tuneflow_py.models.automation import AutomationTarget, AutomationTargetType
 from tuneflow_py.models.audio_plugin import AudioPlugin, decode_audio_plugin_tuneflow_id
 from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than, lower_equal
-from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, Instrument, Note as ToolkitNote
+from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, \
+    Instrument, Note as ToolkitNote
 from types import SimpleNamespace
 from typing import List
 
@@ -74,7 +75,7 @@ class Song:
         if not track:
             return None
 
-        for i in range(self.get_track_count()-1, -1, -1):
+        for i in range(self.get_track_count() - 1, -1, -1):
             if self.get_track_at(i).get_id() == track_id:
                 del self._proto.tracks[i]
         # Delete dependencies.
@@ -85,20 +86,31 @@ class Song:
         return track
 
     def get_structures(self):
-        return self._proto.structures
+        return [StructureMarker(song=self, proto=structure_proto) for structure_proto in self._proto.structures]
 
     def get_structure_at_index(self, index: int):
-        return self._proto.structures[index]
+        if index < 0:
+            index = 0
+
+        if index >= len(self._proto.structures):
+            index = len(self._proto.structures) - 1
+
+        if index == -1:
+            return None
+
+        return StructureMarker(song=self, proto=self._proto.structures[index])
 
     def get_structure_at_tick(self, tick: int):
-        def tickToStructureFn(tick):
-            return StructureMarker(song=self,tick=tick, type=StructureType.UNKNOWN)._proto
+        def tick_to_structure_fn(tick):
+            return StructureMarker(song=self, tick=tick, type=StructureType.UNKNOWN)
 
-        def structureToTickFn(structure):
-            return structure.tick
+        def structure_to_tick_fn(structure):
+            return structure.get_tick()
 
-        index = Song.get_structure_at_tick_impl(
-            tick, self._proto.structures, tickToStructureFn, structureToTickFn
+        index = lower_equal(
+            self.get_structures(),
+            tick_to_structure_fn(tick),
+            key=lambda s: structure_to_tick_fn(s),
         )
 
         if index < 0:
@@ -107,66 +119,49 @@ class Song:
         if index >= len(self._proto.structures):
             index = len(self._proto.structures) - 1
 
-        return self._proto.structures[index]
+        if index == -1:
+            return None
 
-    @staticmethod
-    def get_structure_at_tick_impl(
-            tick: int,
-            structures: List,
-            tickToStructureFn,
-            structureToTickFn,
-    ):
-        index = lower_equal(
-            structures,
-            tickToStructureFn(tick),
-            key=lambda s: structureToTickFn(s),
-        )
-
-        if index < 0:
-            index = 0
-
-        if index >= len(structures):
-            index = len(structures) - 1
-
-        return index
+        return StructureMarker(song=self, proto=self._proto.structures[index])
 
     def create_structure(self, tick: int, type: StructureType):
-        structure = StructureMarker(song=self,tick=tick,type=type)
+        structure = StructureMarker(song=self, tick=tick, type=type)
+        self._proto.structures.append(structure._proto)
+        structure._proto = self._proto.structures[-1]
         if len(self._proto.structures) == 1:
             # If there is only 1 structure, move it to the start.
             structure.set_tick(0)
-        self._proto.structures.append(structure._proto)
         self._proto.structures.sort(key=lambda x: x.tick)
 
-    def move_structure(self, structureIndex: int, moveToTick: int):
-        structure = self.get_structures()[structureIndex]
+    def move_structure(self, structure_index: int, move_to_tick: int):
+        structure = self.get_structure_at_index(structure_index)
         if not structure:
             return
-        if structureIndex <= 0:
+        if structure_index <= 0:
             return
-        prevStructure = self.get_structures()[structureIndex - 1]
-        if prevStructure.tick == moveToTick:
+        prev_structure = self.get_structure_at_index(structure_index - 1)
+        if prev_structure.get_tick() == move_to_tick:
             # Moved to another structure, delete it.
-            self.remove_structure(structureIndex - 1)
-        elif structureIndex < len(self.get_structures()) - 1:
-            nextStructure = self.get_structures()[structureIndex + 1]
-            if nextStructure and nextStructure.tick == moveToTick:
+            self.remove_structure(structure_index - 1)
+        elif structure_index < len(self.get_structures()) - 1:
+            next_structure = self.get_structure_at_index(structure_index + 1)
+            if next_structure and next_structure.get_tick() == move_to_tick:
                 # Moved to another time signature, delete it.
-                self.remove_structure(structureIndex + 1)
-        structure.tick = moveToTick
+                self.remove_structure(structure_index + 1)
+        structure.set_tick(move_to_tick)
         self._proto.structures.sort(key=lambda x: x.tick)
 
     def update_structure_at_tick(self, tick: int, type: StructureType):
-        existinStructure = self.get_structure_at_tick(tick)
-        if existinStructure:
-            existinStructure.type = type
+        existing_structure = self.get_structure_at_tick(tick)
+        if existing_structure:
+            existing_structure.set_type(type)
         else:
             self.create_structure(tick, type)
 
     def remove_structure(self, index: int):
         if index < 0 or index >= len(self._proto.structures):
             return
-        self.get_structures().pop(index)
+        self._proto.structures.pop(index)
         if len(self._proto.structures) > 0 and self._proto.structures[0].tick > 0:
             # If the first structure of the remaining ones does not start
             # from 0, move it to 0.
@@ -204,12 +199,14 @@ class Song:
         '''
         TODO: Replace proto operations with builtin methods.
         '''
+
         def scale_int_by(value, scale_factor):
-            return round(value*scale_factor)
+            return round(value * scale_factor)
+
         song = Song()
         song_proto = song._proto
         ppq_scale_factor = float(song_proto.PPQ) / \
-            float(midi_obj.ticks_per_beat)
+                           float(midi_obj.ticks_per_beat)
         # Add tempos and time signatures
         song.overwrite_tempo_changes([TempoEvent(ticks=scale_int_by(
             tempo_change.time, ppq_scale_factor), bpm=tempo_change.tempo) for tempo_change in midi_obj.tempo_changes])
@@ -255,7 +252,7 @@ class Song:
                     # Pan CC
                     pan_ccs.append(control_change)
             if len(volume_ccs) == 1:
-                song_track_proto.volume = volume_ccs[0].value/127.0
+                song_track_proto.volume = volume_ccs[0].value / 127.0
             elif len(volume_ccs) > 1:
                 volume_target = AutomationTarget(AutomationTargetType.VOLUME)
                 volume_target_id = volume_target.to_tf_automation_target_id()
@@ -266,7 +263,7 @@ class Song:
                 song_track_proto.automation.target_values[volume_target_id] = volume_target_value
                 for index, cc in enumerate(sorted(volume_ccs, key=lambda x: x.time)):
                     volume_target_value.points.add(tick=scale_int_by(
-                        cc.time, ppq_scale_factor), value=cc.value/127.0, id=index+1)
+                        cc.time, ppq_scale_factor), value=cc.value / 127.0, id=index + 1)
             else:
                 # Volume data missing from midi, set it to default.
                 song_track_proto.volume = db_to_volume_value(0.0)
@@ -282,7 +279,7 @@ class Song:
                 song_track_proto.automation.target_values[pan_target_id] = pan_target_value
                 for index, cc in enumerate(sorted(pan_ccs, key=lambda x: x.time)):
                     pan_target_value.points.add(tick=scale_int_by(
-                        cc.time, ppq_scale_factor), value=cc.value/127.0, id=index+1)
+                        cc.time, ppq_scale_factor), value=cc.value / 127.0, id=index + 1)
 
         song.last_tick = song_last_tick
         song.duration = song.tick_to_seconds(song_last_tick)
@@ -401,7 +398,7 @@ class Song:
             # Moved to another tempo, delete it.
             self.remove_tempo_change_at(tempo_index - 1)
         elif (tempo_index < self.get_tempo_event_count() - 1):
-            next_tempo = self.get_tempo_event_at(tempo_index+1)
+            next_tempo = self.get_tempo_event_at(tempo_index + 1)
             if (next_tempo is not None and next_tempo.get_ticks() == move_to_tick):
                 # Moved to another tempo, delete it.
                 self.remove_tempo_change_at(tempo_index + 1)
