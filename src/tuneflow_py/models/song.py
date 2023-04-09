@@ -89,15 +89,8 @@ class Song:
         return [StructureMarker(song=self, proto=structure_proto) for structure_proto in self._proto.structures]
 
     def get_structure_at_index(self, index: int):
-        if index < 0:
-            index = 0
-
-        if index >= len(self._proto.structures):
-            index = len(self._proto.structures) - 1
-
-        if index == -1:
+        if index < 0 or index >= len(self._proto.structures):
             return None
-
         return StructureMarker(song=self, proto=self._proto.structures[index])
 
     def get_structure_at_tick(self, tick: int):
