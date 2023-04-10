@@ -120,7 +120,6 @@ class TestStructure(unittest.TestCase):
         assert song.get_structures()[1].get_type() == StructureType.CHORUS
         assert song.get_structures()[1].get_tick() == 960
 
-
     def test_remove_structure_correctly(self):
         song = create_song()
         song.create_structure(tick=0, type=StructureType.INTRO)
@@ -136,6 +135,27 @@ class TestStructure(unittest.TestCase):
         song.remove_structure(3)
         song.remove_structure(-1)
         assert song.get_tempo_event_count() == 2
+
+    def test_create_custom_marker(self):
+        song = create_song()
+        song.create_structure(tick=0, type=StructureType.INTRO)
+        song.create_structure(tick=480, type=StructureType.CUSTOM, custom_name='myStructure')
+        song.create_structure(tick=960, type=StructureType.OUTRO, custom_name='myStructure')
+        self.assertEqual(song.get_structure_at_index(0).get_type(), StructureType.INTRO)
+        self.assertEqual(song.get_structure_at_index(1).get_type(), StructureType.CUSTOM)
+        self.assertEqual(song.get_structure_at_index(1).get_custom_name(), 'myStructure')
+        self.assertEqual(song.get_structure_at_index(2).get_custom_name(), '')
+
+    def test_update_custom_marker(self):
+        song = create_song()
+        song.create_structure(tick=0, type=StructureType.INTRO)
+        song.create_structure(tick=480, type=StructureType.CUSTOM, custom_name='myStructure')
+        song.create_structure(tick=960, type=StructureType.OUTRO, custom_name='myStructure')
+        self.assertEqual(song.get_structure_at_index(1).get_type(), StructureType.CUSTOM)
+        self.assertEqual(song.get_structure_at_index(1).get_custom_name(), 'myStructure')
+
+        song.get_structure_at_index(1).set_custom_name('myNewStructureName')
+        self.assertEqual(song.get_structure_at_index(1).get_custom_name(), 'myNewStructureName')
 
 
 if __name__ == '__main__':

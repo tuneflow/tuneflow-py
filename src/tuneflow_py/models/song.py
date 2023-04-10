@@ -117,8 +117,8 @@ class Song:
 
         return StructureMarker(song=self, proto=self._proto.structures[index])
 
-    def create_structure(self, tick: int, type: StructureType):
-        structure = StructureMarker(song=self, tick=tick, type=type)
+    def create_structure(self, tick: int, type: StructureType, custom_name: str | None = None):
+        structure = StructureMarker(song=self, tick=tick, type=type, custom_name=custom_name)
         self._proto.structures.append(structure._proto)
         structure._proto = self._proto.structures[-1]
         if len(self._proto.structures) == 1:
@@ -132,7 +132,7 @@ class Song:
             return
         if structure_index <= 0:
             return
-        prev_structure = self.get_structure_at_index(structure_index - 1)
+        prev_structure : StructureMarker = self.get_structure_at_index(structure_index - 1)
         if prev_structure.get_tick() == move_to_tick:
             # Moved to another structure, delete it.
             self.remove_structure(structure_index - 1)
