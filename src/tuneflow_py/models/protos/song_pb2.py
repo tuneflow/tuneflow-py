@@ -245,7 +245,6 @@ _STRUCTUREMARKER_STRUCTURETYPE = _descriptor.EnumDescriptor(
 )
 _sym_db.RegisterEnumDescriptor(_STRUCTUREMARKER_STRUCTURETYPE)
 
-
 _NOTE = _descriptor.Descriptor(
   name='Note',
   full_name='song.Note',
