@@ -50,3 +50,13 @@ class AudioClipData(TypedDict):
     
     Duration needs to be updated whenever audio file (path or content) changes.
     '''
+
+    speed_ratio: NotRequired[float]
+    '''
+    How fast this audio plays, time-stretch is applied when this ratio is set and not 1, default to 1.
+    '''
+
+    pitch_offset: NotRequired[float]
+    '''
+    Pitch offset in semitones, ranging from -48 to 48, default to 0.
+    '''

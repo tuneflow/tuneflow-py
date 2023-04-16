@@ -1,9 +1,6 @@
-from tuneflow_py import Song, Clip, Track, TrackType, Note, ClipType
-from miditoolkit.midi import MidiFile
-from pathlib import PurePath, Path
-from io import BytesIO
-from typing import List
+from tuneflow_py import Song, TrackType, ClipType
 import unittest
+import pytest
 
 TEST_AUDIO_CLIP_DATA = {
     "audio_file_path": 'file1',
@@ -133,6 +130,128 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_audio_clip_data().audio_file_path, TEST_AUDIO_CLIP_DATA["audio_file_path"])
         self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA["start_tick"])
         self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA["duration"])
+    
+    def test_get_optional_clip_audio_data_fields(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1,
+                "speed_ratio": 2,
+                "pitch_offset": 12
+            },
+        )
+        self.assertEqual(clip1.get_audio_speed_ratio(), 2)
+        self.assertEqual(clip1.get_audio_pitch_offset(), 12)
+        clip1.set_audio_pitch_offset(-13)
+        self.assertEqual(clip1.get_audio_pitch_offset(), -13)
+
+    def test_set_and_get_audio_pitch_offset(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1000,
+            audio_clip_data=TEST_AUDIO_CLIP_DATA,
+        )
+        self.assertEqual(clip1.get_audio_pitch_offset(), 0)
+        clip1.set_audio_pitch_offset(24)
+        self.assertEqual(clip1.get_audio_pitch_offset(), 24)
+        with pytest.raises(Exception) as e_info_1:
+            clip1.set_audio_pitch_offset(-99)
+
+        with pytest.raises(Exception) as e_info_2:
+            clip1.set_audio_pitch_offset(99)
+
+    def rejects_out_of_range_audio_speed_ratio(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1
+            },
+        )
+        with pytest.raises(Exception) as e_info_1:
+            clip1.time_stretch_from_clip_right(9999999)
+        with pytest.raises(Exception) as e_info_2:
+            clip1.time_stretch_from_clip_right(961)
+        with pytest.raises(Exception) as e_info_3:
+            clip1.time_stretch_from_clip_left(1439)
+        with pytest.raises(Exception) as e_info_4:
+            clip1.time_stretch_from_clip_left(-999999)
+
+    def test_time_stretch_from_clip_left(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1,
+            },
+        )
+        self.assertEqual(clip1.get_raw_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_start_tick(), 480)
+        self.assertEqual(clip1.get_audio_end_tick(), 1440)
+        self.assertEqual(clip1.get_clip_start_tick(), 960)
+        self.assertEqual(clip1.get_clip_end_tick(), 1440)
+        self.assertEqual(clip1.get_audio_speed_ratio(), 1)
+
+        clip1.time_stretch_from_clip_left(480)
+        self.assertEqual(clip1.get_raw_audio_duration(), 1)
+        self.assertAlmostEqual(clip1.get_audio_duration(), 2.0)
+        self.assertEqual(clip1.get_audio_start_tick(), -480)
+        self.assertEqual(clip1.get_audio_end_tick(), 1440)
+        self.assertEqual(clip1.get_clip_start_tick(), 480)
+        self.assertEqual(clip1.get_clip_end_tick(), 1440)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 0.5)
+
+        clip1.time_stretch_from_clip_left(1200)
+        self.assertEqual(clip1.get_raw_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_duration(), 0.5)
+        self.assertEqual(clip1.get_audio_start_tick(), 960)
+        self.assertEqual(clip1.get_audio_end_tick(), 1440)
+        self.assertEqual(clip1.get_clip_start_tick(), 1200)
+        self.assertEqual(clip1.get_clip_end_tick(), 1440)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 2)
+
+    def test_time_stretch_from_clip_right(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1,
+            },
+        )
+        self.assertEqual(clip1.get_raw_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_start_tick(), 480)
+        self.assertEqual(clip1.get_audio_end_tick(), 1440)
+        self.assertEqual(clip1.get_clip_start_tick(), 960)
+        self.assertEqual(clip1.get_clip_end_tick(), 1440)
+        self.assertEqual(clip1.get_audio_speed_ratio(), 1)
+
+        clip1.time_stretch_from_clip_right(1200)
+        self.assertEqual(clip1.get_audio_duration(), 0.5)
+        self.assertEqual(clip1.get_audio_start_tick(), 720)
+        self.assertEqual(clip1.get_audio_end_tick(), 1200)
+        self.assertEqual(clip1.get_clip_start_tick(), 960)
+        self.assertEqual(clip1.get_clip_end_tick(), 1200)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 2.0)
+
+        clip1.time_stretch_from_clip_right(1680)
+        self.assertEqual(clip1.get_raw_audio_duration(), 1)
+        self.assertEqual(clip1.get_audio_duration(), 2)
+        self.assertEqual(clip1.get_audio_start_tick(), 0)
+        self.assertEqual(clip1.get_audio_end_tick(), 1680)
+        self.assertEqual(clip1.get_clip_start_tick(), 960)
+        self.assertEqual(clip1.get_clip_end_tick(), 1680)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 0.5)
 
 
 class TestTrimLeftAndTrimRight(BaseTestCase):

@@ -48,6 +48,10 @@ class Clip:
                 self._proto.audio_clip_data.audio_data.data = audio_clip_data["audio_data"]["data"]
             self._proto.audio_clip_data.start_tick = audio_clip_data["start_tick"]
             self._proto.audio_clip_data.duration = audio_clip_data["duration"]
+            if "pitch_offset" in audio_clip_data:
+                self._proto.audio_clip_data.pitch_offset = audio_clip_data["pitch_offset"]
+            if "speed_ratio" in audio_clip_data:
+                self._proto.audio_clip_data.speed_ratio = audio_clip_data["speed_ratio"]
 
             clip_start_tick = max(
                 clip_start_tick, audio_clip_data["start_tick"]) if clip_start_tick is not None else audio_clip_data["start_tick"]
@@ -89,19 +93,215 @@ class Clip:
         return self.song.seconds_to_tick(audio_start_time + duration)
 
     def get_duration(self):
+        '''
+        Duration from the clip start to clip end, in seconds.
+        '''
         return self.song.tick_to_seconds(
             self.get_clip_end_tick()) - self.song.tick_to_seconds(
             self.get_clip_start_tick())
 
     def get_audio_duration(self) -> float | None:
         '''
-        Gets the audio's duration if the clip is AUDIO_CLIP.
+        Gets the STRETCHED, FULL audio duration if the clip is AUDIO_CLIP, this takes speed ratio into consideration.
 
         Returns None if the clip is not AUDIO_CLIP or audio clip data is missing.
         '''
         if self.get_type() != ClipType.AUDIO_CLIP or not self.has_audio_clip_data():
             return None
+        return self._proto.audio_clip_data.duration / self.get_audio_speed_ratio()
+
+    def get_raw_audio_duration(self) -> float | None:
+        '''
+        Gets the UNSTRETCHED, FULL audio duration if the clip is AUDIO_CLIP, this DOES NOT consider speed ratio.
+
+        Returns undefined if the clip is not AUDIO_CLIP or audio clip data is missing.
+        '''
+        if self.get_type() != ClipType.AUDIO_CLIP or not self.has_audio_clip_data():
+            return None
         return self._proto.audio_clip_data.duration
+
+    def get_audio_speed_ratio(self) -> float:
+        if self.get_type() != ClipType.AUDIO_CLIP or not self.has_audio_clip_data() or self._proto.audio_clip_data.speed_ratio is None or self._proto.audio_clip_data.speed_ratio == 0:
+            return 1
+        return self._proto.audio_clip_data.speed_ratio
+
+    def time_stretch_from_clip_left(self, to_left_tick: int, resolve_clip_conflict=True):
+        '''
+        Time-stretch the clip by adjusting the start tick of the clip.
+
+        NOTE: This could delete the clip if the clip range becomes empty after
+        this call.
+
+        @param `to_left_tick` The new start tick to stretch the clip to.
+        '''
+        if (to_left_tick >= self.get_clip_end_tick()):
+            self.delete_from_parent(delete_associated_track_automation=True)
+            return
+        stretch_factor = (self.get_clip_end_tick(
+        ) - to_left_tick) / (self.get_clip_end_tick() - self.get_clip_start_tick())
+        # Resolve conflict before changing the clip's range
+        # to preserve the current order of clips.
+        if (resolve_clip_conflict and self.track is not None):
+            self.track._resolve_clip_conflict(
+                self.get_id(),
+                min(self.get_clip_start_tick(), to_left_tick),
+                self.get_clip_end_tick(),
+            )
+
+        if self.get_type() == ClipType.MIDI_CLIP:
+            self._time_stretch_midi_clip(stretch_factor=stretch_factor, reference_tick=self.get_clip_end_tick())
+            self.move_clip_to(to_left_tick, move_associated_track_automation_points=False)
+        elif (self.get_type() == ClipType.AUDIO_CLIP):
+            self._time_stretch_audio_clip(to_left_tick, self.get_clip_end_tick(), self.get_clip_end_tick())
+        # TODO: Scale the associated automation points accordingly.
+
+    def time_stretch_from_clip_right(self, to_right_tick: int, resolve_clip_conflict=True):
+        '''
+        Time-stretch the clip by adjusting the end tick of the clip.
+
+        NOTE: This could delete the clip if the range becomes empty after
+        this call.
+        @param to_right_tick The new end tick to stretch the clip to.
+        '''
+        if (to_right_tick <= self.get_clip_start_tick()):
+            self.delete_from_parent(delete_associated_track_automation=True)
+            return
+
+        # Resolve conflict before changing the clip's range
+        # to preserve the current order of clips.
+        if resolve_clip_conflict and self.track:
+            self.track._resolve_clip_conflict(
+                self.get_id(),
+                self.get_clip_start_tick(),
+                max(self.get_clip_end_tick(), to_right_tick),
+            )
+
+        if (self.get_type() == ClipType.MIDI_CLIP):
+            stretch_factor = (to_right_tick - self.get_clip_start_tick()
+                              ) / (self.get_clip_end_tick() - self.get_clip_start_tick())
+            self._time_stretch_midi_clip(stretch_factor=stretch_factor, reference_tick=self.get_clip_start_tick())
+        elif (self.get_type() == ClipType.AUDIO_CLIP):
+            self._time_stretch_audio_clip(self.get_clip_start_tick(), to_right_tick, self.get_clip_start_tick())
+
+        # TODO: Scale the associated automation points accordingly.
+
+    def _time_stretch_midi_clip(self, stretch_factor: float, reference_tick: int):
+        for note in self.get_raw_notes():
+            note.set_start_tick(
+                Clip._calculate_scaled_new_tick(
+                    note.get_start_tick(),
+                    reference_tick, stretch_factor))
+            note.set_end_tick(
+                Clip._calculate_scaled_new_tick(
+                    note.get_end_tick(),
+                    reference_tick, stretch_factor))
+
+        self._proto.clip_start_tick = Clip._calculate_scaled_new_tick(
+            self.get_clip_start_tick(),
+            reference_tick,
+            stretch_factor,
+        )
+        self._proto.clip_end_tick = Clip._calculate_scaled_new_tick(
+            self.get_clip_end_tick(), reference_tick, stretch_factor)
+
+    def _time_stretch_audio_clip(
+            self,
+        new_left_tick: int,
+        new_right_tick: int,
+        reference_tick: int,
+    ):
+        if (self.get_type() != ClipType.AUDIO_CLIP):
+            return
+
+        audio_clip_data = self.get_audio_clip_data()
+        if (audio_clip_data is None):
+            raise Exception(f"Audio clip data is missing for audio clip {self.get_id()}")
+        old_speed_ratio = audio_clip_data.speed_ratio if audio_clip_data.speed_ratio is not None and audio_clip_data.speed_ratio > 0 else 1
+        old_duratoin = self.song.tick_to_seconds(
+            self.get_clip_end_tick()) - self.song.tick_to_seconds(self.get_clip_start_tick())
+        new_duration = self.song.tick_to_seconds(new_right_tick) - self.song.tick_to_seconds(new_left_tick)
+        time_stretch_factor = new_duration / old_duratoin
+        speed_ratio = old_speed_ratio / time_stretch_factor
+        Clip.validate_audio_speed_ratio(speed_ratio)
+        old_audio_start_time = self.song.tick_to_seconds(audio_clip_data.start_tick)
+        reference_tick_time = self.song.tick_to_seconds(reference_tick)
+        new_audio_start_to_reference_distance_in_time = (
+            reference_tick_time - old_audio_start_time) * time_stretch_factor
+        new_audio_start_time = reference_tick_time - new_audio_start_to_reference_distance_in_time
+        new_audio_start_tick = self.song.seconds_to_tick(new_audio_start_time)
+        audio_clip_data.speed_ratio = speed_ratio
+        audio_clip_data.start_tick = new_audio_start_tick
+        self._proto.clip_start_tick = new_left_tick
+        self._proto.clip_end_tick = new_right_tick
+
+    @staticmethod
+    def validate_audio_speed_ratio(speed_ratio: float):
+        if (
+            speed_ratio is None or
+            speed_ratio < Clip.MIN_AUDIO_SPEED_RATIO or
+            speed_ratio > Clip.MAX_AUDIO_SPEED_RATIO
+        ):
+            raise Exception(
+                f'Speed ratio must be >= {Clip.MIN_AUDIO_SPEED_RATIO} and <= {Clip.MAX_AUDIO_SPEED_RATIO}, you are changing to {speed_ratio}',
+            )
+
+    @staticmethod
+    def _calculate_scaled_new_tick(
+        old_tick: int,
+        reference_tick: int,
+        scale_factor: float,
+    ):
+        distance = (reference_tick - old_tick) * scale_factor
+        return round(reference_tick - distance)
+
+    def get_audio_pitch_offset(self):
+        '''
+        @returns The pitch offset of this audio in semitones, comparing to the raw audio.
+        '''
+        if (
+            self.get_type() != ClipType.AUDIO_CLIP or
+            not self.has_audio_clip_data() or
+            self.get_audio_clip_data().pitch_offset is None  # type: ignore
+        ):
+            return 0
+        return self.get_audio_clip_data().pitch_offset  # type: ignore
+
+    def set_audio_pitch_offset(self, offset_in_semitones: float):
+        '''
+        Sets the pitch offset of this audio in semitones, the offset is compared to the raw audio.
+        * @param offset_in_semitones Ranging from `Clip.MIN_AUDIO_PITCH_OFFSET` to `Clip.MAX_AUDIO_PITCH_OFFSET`, step 1, inclusive.
+        * @returns
+        '''
+        if (self.get_type() != ClipType.AUDIO_CLIP):
+            return
+
+        Clip.validate_audio_pitch_offset(offset_in_semitones)
+        self.get_audio_clip_data().pitch_offset = offset_in_semitones  # type: ignore
+
+    @staticmethod
+    def validate_audio_pitch_offset(offset_in_semitones: float):
+        if (
+            offset_in_semitones is None or
+            offset_in_semitones < Clip.MIN_AUDIO_PITCH_OFFSET or
+            offset_in_semitones > Clip.MAX_AUDIO_PITCH_OFFSET
+        ):
+            raise Exception(
+                f'Pitch offset must be >= {Clip.MIN_AUDIO_PITCH_OFFSET} and <= {Clip.MAX_AUDIO_PITCH_OFFSET}, you are setting to {offset_in_semitones}',
+            )
+
+    def get_audio_start_tick(self):
+        '''
+        Gets the current clip audio's start tick.
+
+        Note that this differs from the clip's start tick in that the user can trim
+        the clip to only play part of the audio.
+
+        Returns None if the clip is not audio clip or audio clip data is missing.
+        '''
+        if (self.get_type() != ClipType.AUDIO_CLIP or not self.has_audio_clip_data()):
+            return None
+
+        return self.get_audio_clip_data().start_tick  # type: ignore
 
     def get_raw_note_count(self):
         return len(self._proto.notes)
@@ -195,10 +395,20 @@ class Clip:
     def has_audio_clip_data(self) -> bool:
         return self._proto.HasField("audio_clip_data")
 
-    def get_audio_clip_data(self):
+    def get_audio_clip_data(self) -> AudioClipData | None:
         if not self.has_audio_clip_data():
             return None
         return self._proto.audio_clip_data
+
+    def set_audio_file(self, file_path: str, start_tick: int, duration: float):
+        '''
+        Sets a new audio file.
+        '''
+        self._proto.audio_clip_data.audio_file_path = file_path
+        self._proto.audio_clip_data.start_tick = start_tick
+        self._proto.audio_clip_data.duration = duration
+        self._proto.audio_clip_data.speed_ratio = 1
+        self._proto.audio_clip_data.pitch_offset = 0
 
     def clear_notes(self):
         del self._proto.notes[:]
@@ -583,3 +793,8 @@ class Clip:
     @staticmethod
     def _generate_clip_id():
         return generate_nanoid(size=10)
+
+    MIN_AUDIO_SPEED_RATIO = 0.05
+    MAX_AUDIO_SPEED_RATIO = 20
+    MIN_AUDIO_PITCH_OFFSET = -24
+    MAX_AUDIO_PITCH_OFFSET = 24
