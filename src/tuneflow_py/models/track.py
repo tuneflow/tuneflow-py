@@ -2,6 +2,7 @@ from __future__ import annotations
 from tuneflow_py.descriptors.clip_descriptor import AudioClipData
 from tuneflow_py.models.protos import song_pb2
 from tuneflow_py.models.clip import Clip, ClipType
+from tuneflow_py.models.note import Note
 from tuneflow_py.models.audio_plugin import AudioPlugin
 from tuneflow_py.models.automation import AutomationData
 from tuneflow_py.utils import db_to_volume_value, volume_value_to_db, lower_equal, greater_equal, lower_than, decode_audio_plugin_tuneflow_id
@@ -457,3 +458,10 @@ class Track:
     @staticmethod
     def _generate_track_id():
         return nanoid.generate()
+
+    def get_visible_notes(self) -> List[Note]:
+        visible_notes = []
+        for clip in self.get_clips():
+            for note in clip.get_notes():
+                visible_notes.append(note)
+        return sorted(visible_notes, key=lambda note: note.get_start_tick())
