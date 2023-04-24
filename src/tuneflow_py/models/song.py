@@ -12,7 +12,7 @@ from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than, low
 from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, \
     Instrument, Note as ToolkitNote
 from types import SimpleNamespace
-from typing import List, Callable, Any, List, Optional
+from typing import List, List, Optional
 from dataclasses import dataclass
 
 
