@@ -12,7 +12,7 @@ from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than, low
 from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, \
     Instrument, Note as ToolkitNote
 from types import SimpleNamespace
-from typing import List, Callable, Any, Optional
+from typing import List, Callable, Any, List, Optional
 from dataclasses import dataclass
 
 
@@ -87,14 +87,8 @@ class Song:
         return track
 
     def get_bar_beats(self, end_tick: int) -> List[BarBeat]:
-        return Song.get_bar_beats_impl(
-            end_tick,
-            self._proto.PPQ,
-            self._proto.time_signatures,
-        )
-
-    @staticmethod
-    def get_bar_beats_impl(end_tick: int, ppq: int, time_signatures: List[TimeSignatureEvent]) -> List[BarBeat]:
+        ppq = self._proto.PPQ
+        time_signatures = self._proto.time_signatures
         if not time_signatures:
             return []
 
@@ -153,6 +147,48 @@ class Song:
             current_tick += (ppq * 4) / current_time_signature_info.get_denominator()
 
         return bar_beats
+
+    def get_leading_bar(tick: int, bar_beats: List[BarBeat]) -> Optional[BarBeat]:
+        if not bar_beats or len(bar_beats) == 0:
+            return None
+        if tick < 0:
+            return bar_beats[0]
+        index = lower_equal(bar_beats, BarBeat(tick=tick), key=lambda bb: bb.tick)
+        while index > 0 and bar_beats[index].beat != 1:
+            index -= 1
+        return bar_beats[index]
+
+    def get_leading_beat(tick: int, bar_beats: List[BarBeat]) -> Optional[BarBeat]:
+        if not bar_beats or len(bar_beats) == 0:
+            return None
+        if tick < 0:
+            return bar_beats[0]
+        index = lower_equal(bar_beats, BarBeat(tick=tick), key=lambda bb: bb.tick)
+        return bar_beats[index]
+
+    def get_trailing_beat(tick: int, bar_beats: List[BarBeat]) -> Optional[BarBeat]:
+        if not bar_beats or len(bar_beats) == 0:
+            return None
+        if tick < 0:
+            return bar_beats[0]
+        index = greater_equal(bar_beats, BarBeat(tick=tick), key=lambda bb: bb.tick)
+        if index > len(bar_beats) - 1:
+            return bar_beats[len(bar_beats) - 1]
+        return bar_beats[index]
+
+    def get_closest_beat(tick: int, bar_beats: List[BarBeat]) -> Optional[BarBeat]:
+        if not bar_beats or len(bar_beats) == 0:
+            return None
+        if tick < 0:
+            return bar_beats[0]
+        index = lower_equal(bar_beats, BarBeat(tick=tick), key=lambda bb: bb.tick)
+
+        if index >= len(bar_beats) - 1:
+            return bar_beats[index]
+        if abs(bar_beats[index].tick - tick) > abs(bar_beats[index + 1].tick - tick):
+            # tick is closer to the next beat.
+            return bar_beats[index + 1]
+        return bar_beats[index]
 
     def get_lyrics(self):
         return self._proto.lyrics

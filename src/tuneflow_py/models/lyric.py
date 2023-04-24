@@ -1,26 +1,31 @@
 import re
-import asyncio
 from typing import Callable, List, Optional
+import unicodedata
+
 from tuneflow_py.utils import lower_equal
 from tuneflow_py.models.protos import song_pb2
 
 from .song import Song
 
-LyricTokenizer = Callable[[str], asyncio.Future[List[str]]]
+LyricTokenizer = Callable[[str], List[str]]
 DEFAULT_PPQ = Song.get_default_resolution()
 
 
 class Lyrics:
-    def __init__(self, song: Song, proto: song_pb2.Lyrics | None = None) -> None:
+    def __init__(self, song: Song) -> None:
         self.song = song
-        if proto is not None:
-            self._proto = proto
-        else:
-            self._proto = song_pb2.Lyric()
+        self._proto = song._proto.lyrics
+        if self._proto is None:
+            self._proto = song_pb2.Lyrics()
         self.lines = [LyricLine(lyrics=self, proto=line_proto) for line_proto in self._proto.lines]
+        
+    def _clear_proto(self) -> None:
+        while len(self._proto.lines) > 0:
+            self._proto.lines.pop()
 
     def _update_proto(self) -> None:
-        self._proto.lines = [line._proto for line in self.lines]
+        self._clear_proto()
+        self._proto.lines.extend([line._proto for line in self.lines])
 
     def get_lines(self):
         return self.lines
@@ -45,11 +50,12 @@ class Lyrics:
             self.sort_lines()
         return lyric_line
 
-    async def create_line_from_string(self, input: str, start_tick: int, end_tick: int, tokenizer: Optional[LyricTokenizer] = None):
+    def create_line_from_string(self, input: str, start_tick: int, end_tick: int, tokenizer: Optional[LyricTokenizer] = None):
         line = self.create_line(start_tick=start_tick, resolve_order=False)
         if not input:
             return line
-        await LyricLine.create_words_from_string(line, input, start_tick, end_tick, tokenizer)
+        LyricLine.create_words_from_string(line, input, start_tick, end_tick, tokenizer)
+        self._update_proto()
         return line
 
     def remove_line_at_index(self, index: int):
@@ -82,7 +88,6 @@ class LyricLine:
             self._proto = proto
         else:
             self._proto = song_pb2.LyricLine()
-            self._proto.start_tick = start_tick
 
         # Initialize the words list with the corresponding LyricWord instances.
         self.words = [
@@ -100,8 +105,13 @@ class LyricLine:
             self.words.append(placeholder_word)
             self._update_proto()
 
+    def _clear_proto(self):
+        while len(self._proto.words) > 0:
+            self._proto.words.pop()
+
     def _update_proto(self) -> None:
-        self._proto.words = [word._proto for word in self.words]
+        self._clear_proto()
+        self._proto.words.extend([word._proto for word in self.words])
 
     def get_sentence(self) -> str:
         if self.is_empty():
@@ -147,7 +157,7 @@ class LyricLine:
             )
             word.move_to(word_start_tick, word_end_tick)
 
-    async def create_words_from_string(
+    def create_words_from_string(
         self,
         input: str,
         start_tick: int,
@@ -155,11 +165,8 @@ class LyricLine:
         tokenizer: Optional[LyricTokenizer] = None,
     ) -> None:
         words = (
-            await tokenizer(input)
-            if tokenizer
-            else asyncio.run_coroutine_threadsafe(
-                LyricLine.default_lyric_tokenizer(input), asyncio.get_event_loop()
-            ).result()
+            tokenizer(input) if tokenizer
+            else LyricLine.default_lyric_tokenizer(input)
         )
         tick_per_word = (end_tick - start_tick) / len(words)
         new_words = []
@@ -176,7 +183,7 @@ class LyricLine:
         new_word = LyricWord(line=self, word=word, start_tick=start_tick, end_tick=end_tick)
         if self.is_empty():
             self.words = [new_word]
-            self._proto.words = [new_word._proto]
+            self._proto.words.extend([new_word._proto])
         else:
             self.words.append(new_word)
             self._proto.words.append(new_word._proto)
@@ -185,9 +192,10 @@ class LyricLine:
         return new_word
 
     def clear(self):
+        self._clear_proto()
         new_word = self.create_placeholder_word()
         self.words = [new_word]
-        self._proto.words = [new_word._proto]
+        self._proto.words.extend([new_word._proto])
 
     def create_placeholder_word(self):
         return LyricWord(
@@ -219,11 +227,14 @@ class LyricLine:
         self._proto.words.pop(index)
 
     def sort_words(self):
+        start_tick = self.get_start_tick()
         self.words.sort(key=lambda word: word.get_start_tick())
+        if self.get_start_tick() != start_tick:
+            self.lyrics.sort_lines()
         self._update_proto()
 
     @staticmethod
-    async def default_lyric_tokenizer(input: str) -> List[str]:
+    def default_lyric_tokenizer(input: str) -> List[str]:
         tokens = []
 
         current_token = ''
@@ -238,7 +249,7 @@ class LyricLine:
                     tokens.append(current_token)
                     current_token = ''
                 tokens.append(char)
-            elif re.match(r'[\p{P}]', char, re.UNICODE):
+            elif unicodedata.category(char).startswith('P'):
                 if current_token:
                     if re.match(r"^[']+$", char) and re.match(r'^[A-Za-z0-9]+$', current_token):
                         current_token += char
@@ -253,9 +264,8 @@ class LyricLine:
 
         if current_token:
             tokens.append(current_token)
-
+        
         return tokens
-
 
 class LyricWord:
     PLACEHOLDER_WORD = "^%%^"
