@@ -12,7 +12,8 @@ from tuneflow_py.utils import db_to_volume_value, greater_equal, lower_than, low
 from miditoolkit.midi import MidiFile, TempoChange as ToolkitTempoChange, TimeSignature as ToolkitTimeSignature, \
     Instrument, Note as ToolkitNote
 from types import SimpleNamespace
-from typing import List
+from typing import List, Callable, Any, Optional
+from dataclasses import dataclass
 
 
 class Song:
@@ -85,6 +86,77 @@ class Song:
                 dep_track.remove_output()
         return track
 
+    def get_bar_beats(self, end_tick: int) -> List[BarBeat]:
+        return Song.get_bar_beats_impl(
+            end_tick,
+            self._proto.PPQ,
+            self._proto.time_signatures,
+        )
+
+    @staticmethod
+    def get_bar_beats_impl(end_tick: int, ppq: int, time_signatures: List[TimeSignatureEvent]) -> List[BarBeat]:
+        if not time_signatures:
+            return []
+
+        # Dedupe time signatures
+        deduped_time_signatures = []
+        for i in range(len(time_signatures)):
+            if not deduped_time_signatures:
+                deduped_time_signatures.append(time_signatures[i])
+            else:
+                current_time_signature_info = TimeSignatureEvent(proto=time_signatures[i])
+                prev_time_signature_info = TimeSignatureEvent(proto=deduped_time_signatures[-1])
+                if (current_time_signature_info.get_numerator() != prev_time_signature_info.get_numerator() or
+                        current_time_signature_info.get_denominator() != prev_time_signature_info.get_denominator()):
+                    deduped_time_signatures.append(time_signatures[i])
+
+        # Calculate bar beats
+        bar_beats = []
+        current_tick = 0
+        current_time_signature_index = 0
+        bar = 1
+        beat = 1
+
+        while current_tick <= end_tick:
+            if current_time_signature_index < len(deduped_time_signatures) - 1:
+                next_time_signature_info = TimeSignatureEvent(
+                    proto=deduped_time_signatures[current_time_signature_index + 1])
+                next_switching_tick = next_time_signature_info.get_ticks()
+                if current_tick >= next_switching_tick:
+                    current_tick = next_switching_tick
+                    current_time_signature_index += 1
+                    if beat > 1:
+                        # The bar before the time signature change did not finish,
+                        # move on to the next bar.
+                        beat = 1
+                        bar += 1
+
+            current_time_signature_info = TimeSignatureEvent(
+                proto=deduped_time_signatures[current_time_signature_index])
+            bar_beats.append(
+                BarBeat(
+                    bar=bar,
+                    beat=beat,
+                    tick=current_tick,
+                    numerator=current_time_signature_info.get_numerator() if beat == 1 else None,
+                    denominator=current_time_signature_info.get_denominator() if beat == 1 else None,
+                    ticks_per_beat=(ppq * 4) / current_time_signature_info.get_denominator() if beat == 1 else None
+                )
+            )
+
+            if beat >= current_time_signature_info.get_numerator():
+                beat = 1
+                bar += 1
+            else:
+                beat += 1
+
+            current_tick += (ppq * 4) / current_time_signature_info.get_denominator()
+
+        return bar_beats
+
+    def get_lyrics(self):
+        return self._proto.lyrics
+
     def get_structures(self):
         return [StructureMarker(song=self, proto=structure_proto) for structure_proto in self._proto.structures]
 
@@ -132,7 +204,7 @@ class Song:
             return
         if structure_index <= 0:
             return
-        prev_structure : StructureMarker = self.get_structure_at_index(structure_index - 1)
+        prev_structure: StructureMarker = self.get_structure_at_index(structure_index - 1)
         if prev_structure.get_tick() == move_to_tick:
             # Moved to another structure, delete it.
             self.remove_structure(structure_index - 1)
@@ -199,7 +271,7 @@ class Song:
         song = Song()
         song_proto = song._proto
         ppq_scale_factor = float(song_proto.PPQ) / \
-                           float(midi_obj.ticks_per_beat)
+            float(midi_obj.ticks_per_beat)
         # Add tempos and time signatures
         song.overwrite_tempo_changes([TempoEvent(ticks=scale_int_by(
             tempo_change.time, ppq_scale_factor), bpm=tempo_change.tempo) for tempo_change in midi_obj.tempo_changes])
@@ -596,3 +668,13 @@ class Song:
         Returns the default Pulse-per-Quater-Note used in TuneFlow.
         '''
         return 480
+
+
+@dataclass
+class BarBeat:
+    bar: int
+    beat: int
+    tick: int
+    numerator: Optional[int] = None
+    denominator: Optional[int] = None
+    ticks_per_beat: Optional[int] = None
