@@ -5,6 +5,7 @@ from tuneflow_py.models.automation import AutomationTarget, AutomationTargetType
 from tuneflow_py.models.clip import ClipType, Clip
 from tuneflow_py.models.note import Note
 from tuneflow_py.models.song import Song
+from tuneflow_py.models.lyric import Lyrics
 from tuneflow_py.models.tempo import TempoEvent
 from tuneflow_py.models.marker import StructureMarker, StructureType
 from tuneflow_py.models.time_signature import TimeSignatureEvent
