@@ -17,22 +17,24 @@ class Lyrics:
         self._proto = song._proto.lyrics
         if self._proto is None:
             self._proto = song_pb2.Lyrics()
-        self.lines = [
-            LyricLine(lyrics=self, start_tick=line_proto.start_tick, proto=line_proto)
-            for line_proto in self._proto.lines
-        ]
+        self.lines = [LyricLine(lyrics=self, proto=line_proto) for line_proto in self._proto.lines]
 
-    def _clear_proto(self) -> None:
-        while len(self._proto.lines) > 0:
-            self._proto.lines.pop()
+    # Operations that syncronize the proto with line instances
+    def _reload_proto(self) -> None:
+        self._proto.ClearField("lines")
+        self._proto.lines.extend([line._proto for line in self.lines])
+        
+    def _append(self, line: "LyricLine") -> None:
+        self.lines.append(line)
+        self._proto.lines.append(line._proto)
+
+    def _pop(self, index: int) -> "LyricLine":
+        self._proto.lines.pop(index)
+        return self.lines.pop(index)
     
     def clear(self) -> None:
-        self._clear_proto()
+        self._proto.ClearField("lines")
         self.lines = []
-
-    def _update_proto(self) -> None:
-        self._clear_proto()
-        self._proto.lines.extend([line._proto for line in self.lines])
 
     def get_lines(self):
         return self.lines
@@ -49,27 +51,25 @@ class Lyrics:
                 return index
         return -1
 
-    def create_line(self, start_tick: int, resolve_order: bool = True):
-        lyric_line = LyricLine(lyrics=self, start_tick=start_tick)
-        self.lines.append(lyric_line)
-        self._proto.lines.append(lyric_line._proto)
+    def create_line(self, resolve_order: bool = True):
+        lyric_line = LyricLine(lyrics=self)
+        self._append(lyric_line)
         if resolve_order:
             self.sort_lines()
         return lyric_line
 
     def create_line_from_string(self, input: str, start_tick: int, end_tick: int, tokenizer: Optional[LyricTokenizer] = None):
-        line = self.create_line(start_tick=start_tick, resolve_order=False)
+        line = self.create_line(resolve_order=False)
         if not input:
             return line
         LyricLine.create_words_from_string(line, input, start_tick, end_tick, tokenizer)
-        self._update_proto()
+        self._reload_proto()
         return line
 
     def remove_line_at_index(self, index: int):
         if index < 0 or index >= len(self.lines):
             return
-        self.lines.pop(index)
-        self._proto.lines.pop(index)
+        self._pop(index)
 
     def clone_line(self, original_line: "LyricLine"):
         line = LyricLine(lyrics=self, start_tick=original_line.get_start_tick())
@@ -79,13 +79,12 @@ class Lyrics:
                 start_tick=lyric_word.get_start_tick(),
                 end_tick=lyric_word.get_end_tick(),
             )
-        self.lines.append(line)
-        self._proto.lines.append(line._proto)
+        self._append(line)
         return line
 
     def sort_lines(self):
         self.lines.sort(key=lambda line: line.get_start_tick())
-        self._update_proto()
+        self._reload_proto()
 
 
 class LyricLine:
@@ -102,13 +101,18 @@ class LyricLine:
             for word_proto in self._proto.words
         ]
 
-    def _clear_proto(self):
-        while len(self._proto.words) > 0:
-            self._proto.words.pop()
-
-    def _update_proto(self) -> None:
-        self._clear_proto()
+    # Operations that syncronize the proto with word instances
+    def _reload_proto(self) -> None:
+        self._proto.ClearField("words")
         self._proto.words.extend([word._proto for word in self.words])
+    
+    def _append(self, word: "LyricWord") -> None:
+        self.words.append(word)
+        self._proto.words.append(word._proto)
+
+    def _pop(self, index: int) -> "LyricWord":
+        self._proto.words.pop(index)
+        return self.words.pop(index)
 
     def get_sentence(self) -> str:
         if self.is_empty():
@@ -126,6 +130,7 @@ class LyricLine:
     def get_end_tick(self) -> int:
         if not self.words:
             raise ValueError("Words cannot be empty")
+        
         return LyricLine.get_line_end_tick_impl(
             self.words, lambda item: item.get_end_tick()
         )
@@ -174,25 +179,20 @@ class LyricLine:
             new_words.append(new_word)
 
         self.words = new_words
+        self._reload_proto()
         self.sort_words()
 
     def create_word(self, word: str, start_tick: int, end_tick: int, resolve_order: bool = True):
         new_word = LyricWord(line=self, word=word, start_tick=start_tick, end_tick=end_tick)
-        if self.is_empty():
-            self.words = [new_word]
-            self._proto.words.extend([new_word._proto])
-        else:
-            self.words.append(new_word)
-            self._proto.words.append(new_word._proto)
+        self._append(new_word)
         if resolve_order:
             self.sort_words()
         return new_word
 
     def clear(self):
-        self._clear_proto()
+        self._proto.ClearField("words")
         new_word = self.create_placeholder_word()
-        self.words = [new_word]
-        self._proto.words.extend([new_word._proto])
+        self._append(new_word)
 
     def create_placeholder_word(self):
         return LyricWord(
@@ -211,8 +211,7 @@ class LyricLine:
                     # Words will become empty, insert a default placeholder.
                     self.clear()
                 else:
-                    self.words.pop(search_index)
-                    self._proto.words.pop(search_index)
+                    self._pop(search_index)
                 return lyric_word
             search_index -= 1
         return None
@@ -220,15 +219,14 @@ class LyricLine:
     def remove_word_at_index(self, index: int):
         if index < 0 or index >= len(self.words):
             return
-        self.words.pop(index)
-        self._proto.words.pop(index)
+        self._pop(index)
 
     def sort_words(self):
         start_tick = self.get_start_tick()
         self.words.sort(key=lambda word: word.get_start_tick())
+        self._reload_proto()
         if self.get_start_tick() != start_tick:
             self.lyrics.sort_lines()
-        self._update_proto()
 
     @staticmethod
     def default_lyric_tokenizer(input: str) -> List[str]:
