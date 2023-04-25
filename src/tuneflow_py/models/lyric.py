@@ -17,11 +17,18 @@ class Lyrics:
         self._proto = song._proto.lyrics
         if self._proto is None:
             self._proto = song_pb2.Lyrics()
-        self.lines = [LyricLine(lyrics=self, proto=line_proto) for line_proto in self._proto.lines]
-        
+        self.lines = [
+            LyricLine(lyrics=self, start_tick=line_proto.start_tick, proto=line_proto)
+            for line_proto in self._proto.lines
+        ]
+
     def _clear_proto(self) -> None:
         while len(self._proto.lines) > 0:
             self._proto.lines.pop()
+    
+    def clear(self) -> None:
+        self._clear_proto()
+        self.lines = []
 
     def _update_proto(self) -> None:
         self._clear_proto()
@@ -82,7 +89,7 @@ class Lyrics:
 
 
 class LyricLine:
-    def __init__(self, lyrics: Lyrics, start_tick: int, proto: song_pb2.LyricLine | None = None) -> None:
+    def __init__(self, lyrics: Lyrics, proto: song_pb2.LyricLine | None = None) -> None:
         self.lyrics = lyrics
         if proto is not None:
             self._proto = proto
@@ -94,16 +101,6 @@ class LyricLine:
             LyricWord(line=self, proto=word_proto)
             for word_proto in self._proto.words
         ]
-        # If the words list is empty, create a placeholder word and update the proto.
-        if not self.words:
-            placeholder_word = LyricWord(
-                line=self,
-                word=LyricWord.PLACEHOLDER_WORD,
-                start_tick=start_tick,
-                end_tick=start_tick + DEFAULT_PPQ,
-            )
-            self.words.append(placeholder_word)
-            self._update_proto()
 
     def _clear_proto(self):
         while len(self._proto.words) > 0:
@@ -264,8 +261,9 @@ class LyricLine:
 
         if current_token:
             tokens.append(current_token)
-        
+
         return tokens
+
 
 class LyricWord:
     PLACEHOLDER_WORD = "^%%^"
