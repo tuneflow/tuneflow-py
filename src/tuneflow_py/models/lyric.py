@@ -1,11 +1,11 @@
+from __future__ import annotations
 import re
 from typing import Callable, List, Optional
 import unicodedata
 
 from tuneflow_py.utils import lower_equal
 from tuneflow_py.models.protos import song_pb2
-
-from .song import Song
+from tuneflow_py.models.song import Song
 
 LyricTokenizer = Callable[[str], List[str]]
 DEFAULT_PPQ = Song.get_default_resolution()
