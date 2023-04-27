@@ -83,6 +83,8 @@ class LyricWord:
         self._proto.end_tick = end_tick
 
     def move_to(self, start_tick: int, end_tick: int):
+        if start_tick >= end_tick:
+            self.delete_from_parent()
         self._proto.start_tick = start_tick
         self._proto.end_tick = end_tick
         self.line.sort_words()
@@ -112,7 +114,6 @@ class LyricWord:
 class LyricLine:
     '''
     Lyrics is composed of a list of LyricLine objects
-    The class is a wrapper of the LyricLine proto object
     '''
 
     def __init__(
@@ -125,7 +126,7 @@ class LyricLine:
         if proto is not None:
             self._proto = proto
         else:
-            self._proto = song_pb2.LyricLine()
+            self._proto = song_pb2.LyricLine()      
 
         if len(self._proto.words) == 0:
             # Create a default placeholder for the empty line
@@ -389,7 +390,6 @@ class Lyrics:
                 raise Exception("Lyric line has no words")
             yield LyricLine(
                 lyrics=self,
-                start_tick=line_proto.words[0].start_tick,
                 proto=line_proto
             )
 
@@ -399,7 +399,6 @@ class Lyrics:
             raise Exception("Lyric line has no words")
         return LyricLine(
             lyrics=self,
-            start_tick=proto.words[0].start_tick,
             proto=self._proto.lines[index]
         )
 
@@ -409,10 +408,10 @@ class Lyrics:
         del self._proto.lines[index]
 
     def clone_line(self, original_line: LyricLine):
-        new_line = song_pb2.LyricLine()
-        self._proto.lines.add().CopyFrom(original_line._proto)
+        new_proto = self._proto.lines.add()
+        new_proto.CopyFrom(original_line._proto)
         self.sort_lines()
-        return new_line
+        return LyricLine(lyrics=self, proto=new_proto)
 
     def sort_lines(self):
         self._proto.lines.sort(key=lambda line: LyricLine._get_start_tick(line))

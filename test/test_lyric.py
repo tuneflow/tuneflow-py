@@ -73,8 +73,15 @@ class TestLyrics(unittest.TestCase):
     def test_clone_line(self):
         lyrics = create_lyrics()
         line = lyrics.create_line(300)
-        lyrics.clone_line(line)
+        new_line = lyrics.clone_line(line)
         self.assertEqual(len(lyrics._proto.lines), 7)
+        # Check the cloned line
+        assert_lyric_lines_equal({
+            "sentence": "",
+            "start_tick": 300,
+            "end_tick": 780
+        }, new_line)
+        # Check if cloned and sorted properly
         assert_lyric_lines_equal({
             "sentence": "",
             "start_tick": 300,
@@ -176,16 +183,22 @@ class TestLyricWord(unittest.TestCase):
     def test_move_to(self):
         lyrics = create_lyrics()
         line = lyrics.create_line(10)
-        word = line._proto.words[0]
-        word = LyricWord(line=line, proto=word)
+        word = line.create_word(word="test", start_tick=5, end_tick=15);
         word.move_to(5, 15)
         self.assertEqual(word.get_start_tick(), 5)
         self.assertEqual(word.get_end_tick(), 15)
         assert_lyric_lines_equal({
-            "sentence": "",
+            "sentence": "test",
             "start_tick": 5,
             "end_tick":15 
         }, lyrics.get_line_at_index(0))
+        word.move_to(6, 6)
+        assert_lyric_lines_equal({
+            "sentence": "",
+            "start_tick": 5,
+            "end_tick": 5 + DEFAULT_PPQ * 4 * 2,
+        }, lyrics.get_line_at_index(0))
+    
 
 
 if __name__ == '__main__':
