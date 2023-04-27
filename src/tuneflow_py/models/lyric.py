@@ -126,7 +126,7 @@ class LyricLine:
         if proto is not None:
             self._proto = proto
         else:
-            self._proto = song_pb2.LyricLine()      
+            self._proto = song_pb2.LyricLine()
 
         if len(self._proto.words) == 0:
             # Create a default placeholder for the empty line
