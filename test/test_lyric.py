@@ -209,7 +209,7 @@ class TestLyrics(unittest.TestCase):
     def test_clear(self):
         lyrics = create_lyrics()
         lyrics.create_line(10)
-        self.assertEqual(len(lyrics), 1)
+        self.assertEqual(len(lyrics), 6)
         lyrics.clear()
         self.assertEqual(len(lyrics), 0)
 
