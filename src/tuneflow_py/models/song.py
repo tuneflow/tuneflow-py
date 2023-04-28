@@ -469,27 +469,6 @@ class Song:
         )
         return round(base_tempo_change_proto.ticks + time_delta * ticks_per_second_since_last_tempo_change)
 
-    def advance_tick_by_bars(original_tick: int, offset_bar: int, offset_beat: int, bar_beats: List[BarBeat]) -> Optional[int]:
-        if original_tick < 0:
-            # Cannot offset negative tick
-            return None
-        if offset_bar < 0 or offset_beat < 0:
-            # Bar and beat offsets have to be positive
-            return None
-        bar_beat_index = lower_equal(bar_beats, BarBeat(tick=original_tick, bar=None, beat=None), lambda a, b: a.tick - b.tick)
-        starting_bar_beat = bar_beats[bar_beat_index if bar_beat_index >= 0 else 0]
-        if not starting_bar_beat:
-            return None
-
-        for bar_beat_index in range(bar_beat_index, len(bar_beats)):
-            current_bar_beat = bar_beats[bar_beat_index]
-            if current_bar_beat.bar - starting_bar_beat.bar >= offset_bar:
-                if (current_bar_beat.bar - starting_bar_beat.bar > offset_bar) or (current_bar_beat.beat >= offset_beat + 1):
-                    break
-
-        ending_bar_beat = bar_beats[bar_beat_index]
-        return ending_bar_beat.tick if ending_bar_beat else None
-
     def overwrite_tempo_changes(self, tempo_events: List[TempoEvent]):
         if len(tempo_events) == 0:
             raise Exception('Cannot clear all the tempo events.')
@@ -622,12 +601,3 @@ class Song:
         '''
         return 480
 
-
-@dataclass
-class BarBeat:
-    bar: int
-    beat: int
-    tick: int
-    numerator: Optional[int] = None
-    denominator: Optional[int] = None
-    ticks_per_beat: Optional[int] = None

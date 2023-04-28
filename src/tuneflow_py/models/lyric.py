@@ -1,6 +1,6 @@
 from __future__ import annotations
 import re
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Generator
 import unicodedata
 
 from tuneflow_py.utils import lower_equal
@@ -60,7 +60,7 @@ class LyricWord:
             start_tick (int): The new start tick of the word.
         '''
         if self._proto.start_tick >= self._proto.end_tick and resolve_order:
-            self.delete_from_parent()
+            self._delete_from_parent()
             return
         self._proto.start_tick = start_tick
         if resolve_order:
@@ -78,37 +78,29 @@ class LyricWord:
             end_tick (int): The new end tick of the word.
         '''
         if end_tick <= self._proto.start_tick and resolve_order:
-            self.delete_from_parent()
+            self._delete_from_parent()
             return
         self._proto.end_tick = end_tick
 
     def move_to(self, start_tick: int, end_tick: int):
         if start_tick >= end_tick:
-            self.delete_from_parent()
+            self._delete_from_parent()
         self._proto.start_tick = start_tick
         self._proto.end_tick = end_tick
         self.line.sort_words()
 
-    def delete_from_parent(self):
+    def _delete_from_parent(self):
         '''
         Delete the word from the parent line.
         '''
         self.line.remove_word(self)
 
     def __eq__(self, other: LyricWord):
-        if isinstance(other, song_pb2.LyricLine.LyricWord):
-            return (
-                self._proto.start_tick == other.start_tick
-                and self._proto.end_tick == other.end_tick
-                and self._proto.word == other.word
-            )
-        elif isinstance(other, LyricWord):
-            return (
-                self._proto.start_tick == other._proto.start_tick
-                and self._proto.end_tick == other._proto.end_tick
-                and self._proto.word == other._proto.word
-            )
-        return False
+        return (
+            self._proto.start_tick == other._proto.start_tick
+            and self._proto.end_tick == other._proto.end_tick
+            and self._proto.word == other._proto.word
+        )
 
 
 class LyricLine:
@@ -136,11 +128,19 @@ class LyricLine:
                 end_tick=start_tick + DEFAULT_PPQ,
             )
 
+    def __len__(self) -> int:
+        if self.is_empty():
+            return 0
+        return len(self._proto.words)
+
+    def __getitem__(self, index: int) -> LyricWord:
+        return self.get_word_at_index(index)
+
     def is_empty(self) -> bool:
         # A line is empty if it only contains a placeholder word
         return len(self._proto.words) == 1 and self._proto.words[0].word == LyricWord.PLACEHOLDER_WORD
 
-    def get_words(self) -> List[LyricWord]:
+    def get_words(self) -> Generator:
         for word_proto in self._proto.words:
             yield LyricWord(line=self, proto=word_proto)
 
@@ -184,30 +184,84 @@ class LyricLine:
             )
             word.move_to(word_start_tick, word_end_tick)
 
-    def create_words_from_string(
+    def _set_words_from_tokens(
         self,
-        input: str,
+        tokens: List[str],
         start_tick: int,
         end_tick: int,
-        tokenizer: Optional[LyricTokenizer] = None,
-    ) -> None:
-        words = (
-            tokenizer(input) if tokenizer
-            else LyricLine.default_lyric_tokenizer(input)
-        )
-        if len(words) == 0:
+    ):
+        if len(tokens) == 0:
+            self.clear()
             return
-        tick_per_word = (end_tick - start_tick) // len(words)
+        tick_per_word = (end_tick - start_tick) // len(tokens)
         del self._proto.words[:]
-        for i, word in enumerate(words):
+        for i, word in enumerate(tokens):
             start = start_tick + i * tick_per_word
             # Adjust the last word to match the end tick
-            end = start_tick + (i + 1) * tick_per_word if i < len(words) - 1 else end_tick
+            end = start_tick + (i + 1) * tick_per_word if i < len(tokens) - 1 else end_tick
             self._proto.words.add(word=word, start_tick=start, end_tick=end)
         self.sort_words()
 
+    def set_words_from_string(
+        self,
+        input: str,
+        start_tick: int | None = None,
+        end_tick: int | None = None,
+        tokenizer: Optional[LyricTokenizer] = None,
+    ):
+        '''
+        Update lyric word objects of the line from a string of words
+        The string is split into words with a tokenizer if provided
+        Otherwise, the default tokenizer is used
+
+        Args:
+            input (str): The string of words
+            start_tick (int | None): The start tick of the line. Use the original tick if set None
+            end_tick (int | None): The end tick of the line. Use the original tick if set None
+            tokenizer (Optional[LyricTokenizer]): The tokenizer to use
+        '''
+        start_tick = self.get_start_tick() if start_tick is None else start_tick
+        end_tick = self.get_end_tick() if end_tick is None else end_tick
+        tokens = (
+            tokenizer(input) if tokenizer
+            else LyricLine.default_lyric_tokenizer(input)
+        )
+        if len(tokens) == 0:
+            self.clear()
+        self._set_words_from_tokens(tokens, start_tick, end_tick)
+
+    @staticmethod
+    def _get_index_of_word_at_tick(line: song_pb2.LyricLine, tick: int):
+        '''
+        Internal generator implementation that locates word at a given tick.
+        '''
+        if len(line.words) == 0 or tick < LyricLine._get_start_tick(line) or tick >= LyricLine._get_end_tick(line):
+            return -1
+        index = lower_equal(
+            line.words,
+            tick,
+            key=lambda item: item if isinstance(item, int) else item.start_tick
+        )
+        if index in range(len(line.words)):
+            return index
+        return -1
+
+    def get_index_of_word_at_tick(self, tick: int):
+        '''
+        Return the index of the word in this proto that contains the given tick,
+        or -1 if no such word exists.
+
+        Args:
+            tick (int): The tick to search for.
+
+        Return:
+            int: The index of the line that contains the tick, or -1 if not found.
+        '''
+        return LyricLine._get_index_of_word_at_tick(self._proto, tick)
+
     def create_word(self, word: str, start_tick: int, end_tick: int, resolve_order: bool = True):
         if self.is_empty():
+            # Remove the placeholder
             del self._proto.words[:]
         proto = self._proto.words.add(word=word, start_tick=start_tick, end_tick=end_tick)
         if resolve_order:
@@ -220,12 +274,20 @@ class LyricLine:
             proto=proto,
         )
 
+    def get_word_at_index(self, index: int) -> LyricWord:
+        if index < 0 or index >= len(self._proto.words):
+            raise IndexError("Index out of range")
+        return LyricWord(
+            line=self,
+            proto=self._proto.words[index]
+        )
+
     def clear(self):
-        new_word = self.create_placeholder_word()
+        new_word = self._create_placeholder_word()
         del self._proto.words[:]
         self._proto.words.append(new_word._proto)
 
-    def create_placeholder_word(self):
+    def _create_placeholder_word(self):
         return LyricWord(
             line=self,
             word=LyricWord.PLACEHOLDER_WORD,
@@ -235,14 +297,11 @@ class LyricLine:
 
     def remove_word(self, word: LyricWord):
         search_index = lower_equal(self._proto.words, word._proto, key=lambda word: word.start_tick)
-        while search_index >= 0 and self._proto.words[search_index]:
+        while search_index >= 0:
             lyric_word = self._proto.words[search_index]
             if lyric_word == word._proto:
-                if len(self._proto.words) == 1:
-                    # Words will become empty, insert a default placeholder.
-                    self.clear()
-                else:
-                    del self._proto.words[search_index]
+                self.remove_word_at_index(search_index)
+                break
             search_index -= 1
 
     def remove_word_at_index(self, index: int):
@@ -253,6 +312,7 @@ class LyricLine:
             self.clear()
         else:
             del self._proto.words[index]
+            self.sort_words()
 
     def sort_words(self):
         self._proto.words.sort(key=lambda word: word.start_tick)
@@ -260,7 +320,7 @@ class LyricLine:
 
     @staticmethod
     def default_lyric_tokenizer(input: str) -> List[str]:
-        """
+        '''
         Tokenizes the input string based on specific rules.
 
         Args:
@@ -268,7 +328,7 @@ class LyricLine:
 
         Returns:
             List[str]: A list of tokens generated based on the rules.
-        """
+        '''
         tokens = []
 
         current_token = ''
@@ -312,6 +372,20 @@ class Lyrics:
             song._proto.lyrics = song_pb2.Lyrics()
         self._proto = song._proto.lyrics
 
+    def __getitem__(self, index: int) -> LyricLine:
+        '''
+        Access the lyric line at the given index.
+        Usage: lyrics[index]
+        '''
+        return self.get_line_at_index(index)
+
+    def __len__(self) -> int:
+        '''
+        Get the number of lyric lines.
+        Usage: len(lyrics)
+        '''
+        return len(self._proto.lines)
+
     def create_line(self, start_tick: int, resolve_order: bool = True):
         '''
         Creates a new empty LyricLine object at the given start_tick.
@@ -330,7 +404,7 @@ class Lyrics:
         return line
 
     def create_line_from_string(self, input: str, start_tick: int, end_tick: int, tokenizer: Optional[LyricTokenizer] = None):
-        """
+        '''
         Create a Line object from a string of words.
 
         Args:
@@ -345,12 +419,12 @@ class Lyrics:
 
         Raises:
             ValueError: If the input string is empty.
-        """
+        '''
         line_proto = self._proto.lines.add()
         line = LyricLine(lyrics=self, start_tick=start_tick, proto=line_proto)
         if not input:
             return line
-        line.create_words_from_string(input, start_tick, end_tick, tokenizer)
+        line.set_words_from_string(input, start_tick, end_tick, tokenizer)
         return line
 
     @staticmethod
@@ -361,8 +435,9 @@ class Lyrics:
         if len(proto.lines) == 0:
             return -1
         start_search_index = lower_equal(
-            [LyricLine._get_start_tick(line) for line in proto.lines],
+            proto.lines,
             tick,
+            key=lambda item: item if isinstance(item, int) else LyricLine._get_start_tick(item)
         )
         for index in range(start_search_index, -1, -1):
             line = proto.lines[index]
@@ -371,7 +446,7 @@ class Lyrics:
         return -1
 
     def get_index_of_line_at_tick(self, tick: int):
-        """
+        '''
         Yield the index of the line in this proto that contains the given tick,
         or -1 if no such line exists.
 
@@ -380,9 +455,14 @@ class Lyrics:
 
         Yields:
             int: The index of the line that contains the tick, or -1 if not found.
-        """
+        '''
         for index in Lyrics._get_index_of_line_at_tick(self._proto, tick):
             yield index
+
+    def get_line_at_index(self, index: int):
+        if index < 0 or index >= len(self._proto.lines):
+            raise IndexError("Index out of range")
+        return LyricLine(lyrics=self, proto=self._proto.lines[index])
 
     def get_lines(self):
         for line_proto in self._proto.lines:
@@ -393,14 +473,17 @@ class Lyrics:
                 proto=line_proto
             )
 
-    def get_line_at_index(self, index: int):
-        proto = self._proto.lines[index]
-        if len(proto.words) == 0:
-            raise Exception("Lyric line has no words")
-        return LyricLine(
-            lyrics=self,
-            proto=self._proto.lines[index]
+    def remove_line(self, line: LyricLine):
+        search_index = lower_equal(
+            self._proto.lines,
+            line._proto,
+            key=lambda line: LyricLine._get_start_tick(line)
         )
+        while search_index >= 0:
+            line_proto = self._proto.lines[search_index]
+            if line_proto == line._proto:
+                self.remove_line_at_index(search_index)
+            search_index -= 1
 
     def remove_line_at_index(self, index: int):
         if index < 0 or index >= len(self._proto.lines):
