@@ -59,7 +59,7 @@ class LyricWord:
         Args:
             start_tick (int): The new start tick of the word.
         '''
-        if self._proto.start_tick >= self._proto.end_tick and resolve_order:
+        if start_tick >= self._proto.end_tick and resolve_order:
             self._delete_from_parent()
             return
         self._proto.start_tick = start_tick
@@ -266,13 +266,7 @@ class LyricLine:
         proto = self._proto.words.add(word=word, start_tick=start_tick, end_tick=end_tick)
         if resolve_order:
             self.sort_words()
-        return LyricWord(
-            line=self,
-            word=word,
-            start_tick=start_tick,
-            end_tick=end_tick,
-            proto=proto,
-        )
+        return LyricWord(line=self, proto=proto)
 
     def get_word_at_index(self, index: int) -> LyricWord:
         if index < 0 or index >= len(self._proto.words):

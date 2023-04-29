@@ -68,6 +68,16 @@ class TestLyrics(unittest.TestCase):
             "start_tick": 10,
             "end_tick": 50
         }, line)
+        assert_lyric_words_equal({ "word": "Hello", "start_tick": 10, "end_tick": 14 }, line[0])
+        assert_lyric_words_equal({ "word": " ", "start_tick": 14, "end_tick": 18 }, line[1])
+        assert_lyric_words_equal({ "word": "world", "start_tick": 18, "end_tick": 22 }, line[2])
+        assert_lyric_words_equal({ "word": "!", "start_tick": 22, "end_tick": 26 }, line[3])
+        assert_lyric_words_equal({ "word": " ", "start_tick": 26, "end_tick": 30 }, line[4])
+        assert_lyric_words_equal({ "word": "你", "start_tick": 30, "end_tick": 34 }, line[5])
+        assert_lyric_words_equal({ "word": "好", "start_tick": 34, "end_tick": 38 }, line[6])
+        assert_lyric_words_equal({ "word": "世", "start_tick": 38, "end_tick": 42 }, line[7])
+        assert_lyric_words_equal({ "word": "界", "start_tick": 42, "end_tick": 46 }, line[8])
+        assert_lyric_words_equal({ "word": "！", "start_tick": 46, "end_tick": 50 }, line[9])
 
     def test_set_words(self):
         lyrics = create_lyrics()
@@ -237,6 +247,7 @@ class TestLyricLine(unittest.TestCase):
         line = lyrics.create_line(10)
         line.create_word("first", 15, 20)
         line.create_word("second", 30, 50)
+        self.assertEqual(len(line), 2)
         line.clear()
         self.assertEqual(len(line), 0)
         self.assertEqual(line.is_empty(), True)
@@ -325,13 +336,6 @@ class TestLyricWord(unittest.TestCase):
             "start_tick": 5,
             "end_tick": 50,
         }, lyrics[0])
-        # Test removing the updated word
-        lyrics[0].remove_word(word)
-        assert_lyric_lines_equal({
-            "sentence": "tick",
-            "start_tick": 30,
-            "end_tick": 50,
-        }, lyrics[1])
 
     def test_set_end_tick(self):
         lyrics = create_lyrics()
@@ -343,6 +347,38 @@ class TestLyricWord(unittest.TestCase):
             "sentence": "test",
             "start_tick": 15,
             "end_tick": 30
+        }, lyrics[1])
+    
+    def test_set_tick_to_remove_word(self):
+        lyrics = create_lyrics()
+        line = lyrics.create_line(10)
+        word = line.create_word("test", 15, 20)
+        assert_lyric_lines_equal({
+            "sentence": "test",
+            "start_tick": 15,
+            "end_tick": 20,
+        }, lyrics[1])
+        self.assertEqual(len(line), 1)
+        word.set_start_tick(20)
+        self.assertEqual(len(line), 0)
+        assert_lyric_lines_equal({
+            "sentence": "",
+            "start_tick": 15,
+            "end_tick": 15 + DEFAULT_PPQ * 4 * 2,
+        }, lyrics[1])
+        word = line.create_word("gaga", 15, 20)
+        self.assertEqual(len(line), 1)
+        assert_lyric_lines_equal({
+            "sentence": "gaga",
+            "start_tick": 15,
+            "end_tick": 20,
+        }, lyrics[1])
+        word.set_end_tick(15)
+        self.assertEqual(len(line), 0)
+        assert_lyric_lines_equal({
+            "sentence": "",
+            "start_tick": 15,
+            "end_tick": 15 + DEFAULT_PPQ * 4 * 2, 
         }, lyrics[1])
 
     def test_move_to_basic(self):
