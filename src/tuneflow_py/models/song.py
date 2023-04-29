@@ -85,6 +85,9 @@ class Song:
                 dep_track.remove_output()
         return track
 
+    def get_lyrics(self):
+        return self._proto.lyrics
+
     def get_structures(self):
         return [StructureMarker(song=self, proto=structure_proto) for structure_proto in self._proto.structures]
 
@@ -132,7 +135,7 @@ class Song:
             return
         if structure_index <= 0:
             return
-        prev_structure : StructureMarker = self.get_structure_at_index(structure_index - 1)
+        prev_structure: StructureMarker = self.get_structure_at_index(structure_index - 1)
         if prev_structure.get_tick() == move_to_tick:
             # Moved to another structure, delete it.
             self.remove_structure(structure_index - 1)
@@ -199,7 +202,7 @@ class Song:
         song = Song()
         song_proto = song._proto
         ppq_scale_factor = float(song_proto.PPQ) / \
-                           float(midi_obj.ticks_per_beat)
+            float(midi_obj.ticks_per_beat)
         # Add tempos and time signatures
         song.overwrite_tempo_changes([TempoEvent(ticks=scale_int_by(
             tempo_change.time, ppq_scale_factor), bpm=tempo_change.tempo) for tempo_change in midi_obj.tempo_changes])
@@ -596,3 +599,4 @@ class Song:
         Returns the default Pulse-per-Quater-Note used in TuneFlow.
         '''
         return 480
+
