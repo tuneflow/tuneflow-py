@@ -175,7 +175,7 @@ class DescriptionsWidgetConfig(TypedDict):
 
 
 class TextAreaWidgetConfig(TypedDict):
-    placeholder: NotRequired[str]
+    placeholder: NotRequired[LabelText]
     maxLength: NotRequired[int]
     allowClear: NotRequired[bool]
     autoSize: NotRequired[bool]

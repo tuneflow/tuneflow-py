@@ -51,7 +51,8 @@ class InjectConfig(TypedDict):
     '''
 
     type: Required[int]
-    options: Required[ClipAudioDataInjectOptions | SelectedClipInfosInjectOptions]
+    options: Required[ClipAudioDataInjectOptions |
+                      SelectedClipInfosInjectOptions]
 
 
 class InjectSource(Enum):
@@ -118,7 +119,7 @@ class ParamDescriptor(TypedDict):
     description: NotRequired[LabelText]
     ''' Explaining what this parameter is for. '''
 
-    injectFrom: NotRequired[InjectSource | InjectConfig]
+    injectFrom: NotRequired[int | InjectConfig]
     '''
     Injects the value from the editor at the time the plugin runs.
     
