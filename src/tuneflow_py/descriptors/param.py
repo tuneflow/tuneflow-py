@@ -76,6 +76,9 @@ class InjectSource(Enum):
     ClipAudioData = 7
     ''' A list of `AudioData` for specified clips. '''
 
+    Language = 8
+    ''' The user language. '''
+
 
 class ParamDescriptor(TypedDict):
     '''
