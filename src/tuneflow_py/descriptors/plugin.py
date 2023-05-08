@@ -3,7 +3,8 @@ from tuneflow_py.descriptors.common import EntityId
 from typing import List, Union
 from typing_extensions import Literal, TypedDict, NotRequired
 
-TuneflowPluginTriggerType = Literal['song', 'context-track-content', 'context-track-control', 'selected-clips']
+TuneflowPluginTriggerType = Literal['song', 'context-track-content', 'context-track-control',
+                                    'selected-clips', "lyrics-generate", "lyrics-structure", "lyrics-line"]
 '''
 The types of plugin triggers.
 
@@ -14,6 +15,9 @@ The types of plugin triggers.
     * `context-track-control` The plugin will be available on the **control** part(the "knobs" portion) of the track.
         When running, it will receive trigger data about the triggering track under cursor.
     * `selected-clips` The plugin will be available on the clip. When running, it will receive trigger data about the currently selected clips.
+    * `lyrics-generate` The plugin will be available on the lyrics editor general context menu. It should focus on the lyrics as a whole.
+    * `lyrics-structure` The plugin will be available on the context menu of a single structure within the lyrics editor. When running, it will receive trigger data about the structure being edited.
+    * `lyrics-line` The plugin will be available on the context menu of a single lyrics line within the lyrics editor. When running, it will receive trigger data about the line being edited.
 '''
 
 AllowedTrackType = Literal['midi', 'audio', 'aux']
@@ -85,7 +89,8 @@ class TuneflowPluginTriggerConfig(TypedDict):
                               ContextTrackControlTriggerConfig, SelectedClipTriggerConfig]]
 
 
-TuneflowPluginTrigger = Union[TuneflowPluginTriggerType, TuneflowPluginTriggerConfig]
+TuneflowPluginTrigger = Union[TuneflowPluginTriggerType,
+                              TuneflowPluginTriggerConfig]
 '''
 The type of the `triggers` field in the plugin's `bundle.json`.
 '''
@@ -119,4 +124,5 @@ class TuneflowPluginOptions(TypedDict):
     '''
 
 
-TuneflowPluginCategory = Literal['generate', 'transcribe', 'analyze', 'synthesize', 'import', 'export', 'misc']
+TuneflowPluginCategory = Literal['generate', 'transcribe',
+                                 'analyze', 'synthesize', 'import', 'export', 'misc']
