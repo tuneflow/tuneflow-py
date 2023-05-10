@@ -83,9 +83,12 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_clip_end_tick(), 1440)
         self.assertEqual(clip1.get_audio_duration(), 1)
         self.assertEqual(clip1.get_audio_end_tick(), 1440)
-        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, TEST_AUDIO_CLIP_DATA["audio_file_path"])
-        self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA["start_tick"])
-        self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA["duration"])
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path,
+                         TEST_AUDIO_CLIP_DATA["audio_file_path"])
+        self.assertEqual(clip1.get_audio_clip_data().start_tick,
+                         TEST_AUDIO_CLIP_DATA["start_tick"])
+        self.assertAlmostEqual(clip1.get_audio_clip_data(
+        ).duration, TEST_AUDIO_CLIP_DATA["duration"])
 
     def test_get_audio_related_fields_with_audio_data(self):
         clip1 = self.audio_track.create_audio_clip(
@@ -100,8 +103,10 @@ class TestBasicGetAndSetOperations(BaseTestCase):
                          TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"]["format"])
         self.assertEqual(clip1.get_audio_clip_data().audio_data.data,
                          TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["audio_data"]["data"])
-        self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["start_tick"])
-        self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["duration"])
+        self.assertEqual(clip1.get_audio_clip_data().start_tick,
+                         TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["start_tick"])
+        self.assertAlmostEqual(clip1.get_audio_clip_data(
+        ).duration, TEST_AUDIO_CLIP_DATA_WITH_AUDIO_DATA["duration"])
 
     def test_set_and_get_custom_clip_start_and_end_tick_out_of_audio_range(self):
         clip1 = self.audio_track.create_audio_clip(
@@ -113,9 +118,12 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_clip_end_tick(), 1440)
         self.assertEqual(clip1.get_audio_duration(), 1)
         self.assertEqual(clip1.get_audio_end_tick(), 1440)
-        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, TEST_AUDIO_CLIP_DATA["audio_file_path"])
-        self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA["start_tick"])
-        self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA["duration"])
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path,
+                         TEST_AUDIO_CLIP_DATA["audio_file_path"])
+        self.assertEqual(clip1.get_audio_clip_data().start_tick,
+                         TEST_AUDIO_CLIP_DATA["start_tick"])
+        self.assertAlmostEqual(clip1.get_audio_clip_data(
+        ).duration, TEST_AUDIO_CLIP_DATA["duration"])
 
     def test_set_and_get_custom_clip_start_and_end_tick_within_audio_range(self):
         clip1 = self.audio_track.create_audio_clip(
@@ -127,10 +135,13 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_clip_end_tick(), 1000)
         self.assertEqual(clip1.get_audio_duration(), 1)
         self.assertEqual(clip1.get_audio_end_tick(), 1440)
-        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, TEST_AUDIO_CLIP_DATA["audio_file_path"])
-        self.assertEqual(clip1.get_audio_clip_data().start_tick, TEST_AUDIO_CLIP_DATA["start_tick"])
-        self.assertAlmostEqual(clip1.get_audio_clip_data().duration, TEST_AUDIO_CLIP_DATA["duration"])
-    
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path,
+                         TEST_AUDIO_CLIP_DATA["audio_file_path"])
+        self.assertEqual(clip1.get_audio_clip_data().start_tick,
+                         TEST_AUDIO_CLIP_DATA["start_tick"])
+        self.assertAlmostEqual(clip1.get_audio_clip_data(
+        ).duration, TEST_AUDIO_CLIP_DATA["duration"])
+
     def test_get_optional_clip_audio_data_fields(self):
         clip1 = self.audio_track.create_audio_clip(
             clip_start_tick=960,
@@ -252,6 +263,67 @@ class TestBasicGetAndSetOperations(BaseTestCase):
         self.assertEqual(clip1.get_clip_start_tick(), 960)
         self.assertEqual(clip1.get_clip_end_tick(), 1680)
         self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 0.5)
+
+    def test_set_audio_file(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1,
+            },
+        )
+        clip1.time_stretch_from_clip_right(1200)
+        clip1.set_audio_pitch_offset(1.0)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 2.0)
+        self.assertAlmostEqual(clip1.get_audio_pitch_offset(), 1.0)
+        self.assertAlmostEqual(clip1.get_audio_duration(), 0.5)
+        self.assertAlmostEqual(clip1.get_audio_start_tick(), 720)
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, 'file1')
+
+        clip1.set_audio_file(file_path='file2', start_tick=120, duration=2)
+
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 1.0)
+        self.assertAlmostEqual(clip1.get_audio_pitch_offset(), 0.0)
+        self.assertAlmostEqual(clip1.get_audio_duration(), 2.0)
+        self.assertAlmostEqual(clip1.get_audio_start_tick(), 120)
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, 'file2')
+
+    def test_set_audio_data(self):
+        clip1 = self.audio_track.create_audio_clip(
+            clip_start_tick=960,
+            clip_end_tick=1440,
+            audio_clip_data={
+                "start_tick": 480,
+                "audio_file_path": 'file1',
+                "duration": 1,
+            },
+        )
+        clip1.time_stretch_from_clip_right(1200)
+        clip1.set_audio_pitch_offset(1.0)
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 2.0)
+        self.assertAlmostEqual(clip1.get_audio_pitch_offset(), 1.0)
+        self.assertAlmostEqual(clip1.get_audio_duration(), 0.5)
+        self.assertAlmostEqual(clip1.get_audio_start_tick(), 720)
+        self.assertEqual(clip1.get_audio_clip_data().audio_file_path, 'file1') #type:ignore
+        self.assertTrue(
+            clip1.get_audio_clip_data().HasField('audio_file_path')) #type:ignore
+        self.assertFalse(
+            clip1.get_audio_clip_data().HasField('audio_data')) #type:ignore
+        
+        clip1.set_audio_data(data=bytes(), format='mp3',
+                             start_tick=120, duration=2)
+
+        self.assertAlmostEqual(clip1.get_audio_speed_ratio(), 1.0)
+        self.assertAlmostEqual(clip1.get_audio_pitch_offset(), 0.0)
+        self.assertAlmostEqual(clip1.get_audio_duration(), 2.0)
+        self.assertAlmostEqual(clip1.get_audio_start_tick(), 120)
+        self.assertFalse(
+            clip1.get_audio_clip_data().HasField('audio_file_path')) #type:ignore
+        self.assertTrue(
+            clip1.get_audio_clip_data().audio_data.HasField('data')) #type:ignore
+        self.assertEqual(clip1.get_audio_clip_data().audio_data.format, 'mp3') #type:ignore
 
 
 class TestTrimLeftAndTrimRight(BaseTestCase):
@@ -445,21 +517,36 @@ class TestResolveConflict(BaseTestCase):
             },
         )
         self.assertEqual(self.audio_track.get_clip_count(), 3)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_start_tick(), 0)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_end_tick(), 239)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().audio_file_path, 'file1')
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().duration, 1)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().start_tick, 0)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_start_tick(), 240)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_end_tick(), 720)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().audio_file_path, 'file2')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().duration, 0.5)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().start_tick, 240)
-        self.assertEqual(self.audio_track.get_clip_at(2).get_clip_start_tick(), 721)
-        self.assertEqual(self.audio_track.get_clip_at(2).get_clip_end_tick(), 960)
-        self.assertEqual(self.audio_track.get_clip_at(2).get_audio_clip_data().audio_file_path, 'file1')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(2).get_audio_clip_data().duration, 1)
-        self.assertEqual(self.audio_track.get_clip_at(2).get_audio_clip_data().start_tick, 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_start_tick(), 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_end_tick(), 239)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().audio_file_path, 'file1')
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().duration, 1)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().start_tick, 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_start_tick(), 240)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_end_tick(), 720)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().audio_file_path, 'file2')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().duration, 0.5)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().start_tick, 240)
+        self.assertEqual(self.audio_track.get_clip_at(
+            2).get_clip_start_tick(), 721)
+        self.assertEqual(self.audio_track.get_clip_at(
+            2).get_clip_end_tick(), 960)
+        self.assertEqual(self.audio_track.get_clip_at(
+            2).get_audio_clip_data().audio_file_path, 'file1')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            2).get_audio_clip_data().duration, 1)
+        self.assertEqual(self.audio_track.get_clip_at(
+            2).get_audio_clip_data().start_tick, 0)
 
     def test_create_clip_to_the_left_of_another_clip(self):
         self.audio_track.create_audio_clip(
@@ -481,16 +568,26 @@ class TestResolveConflict(BaseTestCase):
             },
         )
         self.assertEqual(self.audio_track.get_clip_count(), 2)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_start_tick(), 0)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_end_tick(), 240)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().audio_file_path, 'file2')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().duration, 0.25)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().start_tick, 0)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_start_tick(), 241)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_end_tick(), 960)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().audio_file_path, 'file1')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().duration, 1)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().start_tick, 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_start_tick(), 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_end_tick(), 240)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().audio_file_path, 'file2')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().duration, 0.25)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().start_tick, 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_start_tick(), 241)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_end_tick(), 960)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().audio_file_path, 'file1')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().duration, 1)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().start_tick, 0)
 
     def test_create_clip_to_the_right_of_another_clip(self):
         self.audio_track.create_audio_clip(
@@ -512,17 +609,27 @@ class TestResolveConflict(BaseTestCase):
             },
         )
         self.assertEqual(self.audio_track.get_clip_count(), 2)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_start_tick(), 0)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_clip_end_tick(), 719)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().audio_file_path, 'file1')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().duration, 1)
-        self.assertEqual(self.audio_track.get_clip_at(0).get_audio_clip_data().start_tick, 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_start_tick(), 0)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_clip_end_tick(), 719)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().audio_file_path, 'file1')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().duration, 1)
+        self.assertEqual(self.audio_track.get_clip_at(
+            0).get_audio_clip_data().start_tick, 0)
 
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_start_tick(), 720)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_clip_end_tick(), 960)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().audio_file_path, 'file2')
-        self.assertAlmostEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().duration, 0.25)
-        self.assertEqual(self.audio_track.get_clip_at(1).get_audio_clip_data().start_tick, 720)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_start_tick(), 720)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_clip_end_tick(), 960)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().audio_file_path, 'file2')
+        self.assertAlmostEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().duration, 0.25)
+        self.assertEqual(self.audio_track.get_clip_at(
+            1).get_audio_clip_data().start_tick, 720)
 
     def test_trim_left_edge_overlaps_with_another_clip(self):
         clip1 = self.audio_track.create_audio_clip(

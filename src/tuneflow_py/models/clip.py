@@ -409,6 +409,18 @@ class Clip:
         self._proto.audio_clip_data.duration = duration
         self._proto.audio_clip_data.speed_ratio = 1
         self._proto.audio_clip_data.pitch_offset = 0
+    
+    def set_audio_data(self, data: bytes, format: str, start_tick: int, duration: float):
+        '''
+        Sets to hole a new temporary audio data.
+        '''
+        self._proto.audio_clip_data.ClearField('audio_file_path')
+        self._proto.audio_clip_data.audio_data.data = data
+        self._proto.audio_clip_data.audio_data.format = format
+        self._proto.audio_clip_data.start_tick = start_tick
+        self._proto.audio_clip_data.duration = duration
+        self._proto.audio_clip_data.speed_ratio = 1
+        self._proto.audio_clip_data.pitch_offset = 0
 
     def clear_notes(self):
         del self._proto.notes[:]
