@@ -183,7 +183,8 @@ class TextAreaWidgetConfig(TypedDict):
 
 
 class MarkdownWidgetConfig(TypedDict):
-    markdown: Required[str]
+    markdown: Required[LabelText]
+    ''' The content should be markdown text. Disallowed syntax will be removed. '''
 
 
 class WidgetDescriptor(TypedDict):
