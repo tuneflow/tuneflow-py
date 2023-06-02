@@ -29,6 +29,7 @@ class WidgetType(Enum):
     # Read-only table of descriptions.
     Descriptions = 16
     TextArea = 17
+    Markdown = 18
 
 
 SliderMarkerConfig = Dict[RealNumber, LabelText]
@@ -181,6 +182,10 @@ class TextAreaWidgetConfig(TypedDict):
     autoSize: NotRequired[bool]
 
 
+class MarkdownWidgetConfig(TypedDict):
+    markdown: Required[str]
+
+
 class WidgetDescriptor(TypedDict):
     type: Required[int]  # WidgetType
     config: NotRequired[SliderWidgetConfig
@@ -196,4 +201,5 @@ class WidgetDescriptor(TypedDict):
                         | SelectListWidgetConfig
                         | MultiSourceAudioSelectorWidgetConfig
                         | DescriptionsWidgetConfig
-                        | TextAreaWidgetConfig]
+                        | TextAreaWidgetConfig
+                        | MarkdownWidgetConfig]
