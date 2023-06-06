@@ -31,7 +31,7 @@ class ClipAudioDataInjectOptions(AudioDataInjectOptions):
     '''
     Inject config for when injection source is `InjectSource.ClipAudioData`.
     '''
-    clips: Required[Literal['selectedAudioClips',] | List[ClipInfo]]
+    clips: Required[Literal['selectedAudioClips', 'triggeredAudioClips'] | List[ClipInfo]]
 
 
 class SelectedClipInfosInjectOptions(TypedDict):
